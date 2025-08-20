@@ -1,1 +1,16 @@
-<app-diagram></app-diagram>
+<mat-toolbar color="primary" class="main-toolbar">
+  <span class="app-title">Process Manager</span>
+  <span class="spacer"></span>
+  <button mat-button routerLink="/processes" routerLinkActive="active-nav-link">
+    <mat-icon>list</mat-icon>
+    Process Definitions
+  </button>
+  <button mat-button routerLink="/diagram" routerLinkActive="active-nav-link">
+    <mat-icon>account_tree</mat-icon>
+    BPMN Diagram
+  </button>
+</mat-toolbar>
+
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>

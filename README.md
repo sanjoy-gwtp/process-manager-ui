@@ -1,10 +1,10 @@
-# BPMN-JS Angular integration example
-This example shows how to integrate bpmn into an Angular application.
+# BPMN-JS Angular integration
+This project shows how to integrate bpmn into an Angular application.
 It uses bpmn-js and bpmn-js-properties-panel.
 
 ## About
 
-This example is an angular web application that builds a user interface around the bpmn-js BPMN 2.0 modeler.
+This project is an angular web application that builds a user interface around the bpmn-js BPMN 2.0 modeler.
 ![kép](https://user-images.githubusercontent.com/12006702/185782372-42f06a20-f6d6-471d-9c44-0811a9207649.png)
 
 ### Modeler configuration
@@ -44,7 +44,7 @@ Both model and properties has to be attached after content initialization.
     this.importDiagram(this.xml);
 ```
 ### Custom provider
-In this example we add a custom property on all start events. The process is similar to the javascript example.
+In this project we add a custom property on all start events. The process is similar to the javascript project.
 ![kép](https://user-images.githubusercontent.com/12006702/189526065-28cbca03-0a29-4c4a-92df-6aeea2afab52.png)
 
 The difference is that we have to initiate the text field entry:
@@ -70,7 +70,7 @@ export default {
 };
 ```
 
-## Running the example
+## Running the project
 Install all required dependecies.
 ```
  npm install

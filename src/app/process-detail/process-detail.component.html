@@ -1,0 +1,166 @@
+<div class="container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading process definition details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <mat-card class="error-card">
+      <mat-card-content>
+        <div class="error-message">
+          <mat-icon color="warn">error</mat-icon>
+          {{ error }}
+        </div>
+        <div class="error-actions">
+          <button mat-raised-button color="primary" (click)="loadProcessDefinition()">
+            <mat-icon>refresh</mat-icon>
+            Retry
+          </button>
+          <button mat-button (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+            Back to List
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Detail View -->
+  <div *ngIf="processDefinition && !loading" class="detail-container">
+    <!-- Header -->
+    <mat-card class="header-card">
+      <mat-card-header>
+        <div class="header-content">
+          <button mat-icon-button (click)="goBack()" class="back-button">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <div class="title-section">
+            <mat-card-title>{{ processDefinition.name || processDefinition.key }}</mat-card-title>
+            <mat-card-subtitle *ngIf="processDefinition.description">
+              {{ processDefinition.description }}
+            </mat-card-subtitle>
+          </div>
+          <div class="spacer"></div>
+          <div class="action-buttons">
+            <button mat-raised-button color="primary" 
+                    *ngIf="processDefinition.hasStartFormKey" 
+                    (click)="startProcess()">
+              <mat-icon>play_arrow</mat-icon>
+              Start Process
+            </button>
+            <button mat-raised-button color="accent" 
+                    *ngIf="processDefinition.hasGraphicalNotation" 
+                    (click)="viewDiagram()">
+              <mat-icon>account_tree</mat-icon>
+              View Diagram
+            </button>
+          </div>
+        </div>
+      </mat-card-header>
+    </mat-card>
+
+    <!-- Basic Information -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>info</mat-icon>
+          Basic Information
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Process Key:</span>
+            <code class="info-value">{{ processDefinition.key }}</code>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Version:</span>
+            <mat-chip class="info-value">v{{ processDefinition.version }}</mat-chip>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Status:</span>
+            <mat-chip [color]="processDefinition.suspended ? 'warn' : 'primary'" class="info-value">
+              {{ processDefinition.suspended ? 'Suspended' : 'Active' }}
+            </mat-chip>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Category:</span>
+            <span class="info-value">{{ processDefinition.category }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Deployment ID:</span>
+            <code class="info-value">{{ processDefinition.deploymentId }}</code>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Resource Name:</span>
+            <span class="info-value">{{ processDefinition.resourceName }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Tenant ID:</span>
+            <span class="info-value">{{ processDefinition.tenantId || 'Default' }}</span>
+          </div>
+          <div class="info-item" *ngIf="processDefinition.diagramResourceName">
+            <span class="info-label">Diagram Resource:</span>
+            <span class="info-value">{{ processDefinition.diagramResourceName }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Capabilities -->
+    <mat-card class="capabilities-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>settings</mat-icon>
+          Capabilities
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="capabilities-grid">
+          <div class="capability-item">
+            <mat-icon [color]="processDefinition.hasStartFormKey ? 'primary' : 'disabled'">
+              {{ processDefinition.hasStartFormKey ? 'check_circle' : 'cancel' }}
+            </mat-icon>
+            <span class="capability-label">Has Start Form</span>
+            <mat-chip [color]="processDefinition.hasStartFormKey ? 'accent' : 'basic'">
+              {{ processDefinition.hasStartFormKey ? 'Yes' : 'No' }}
+            </mat-chip>
+          </div>
+          
+          <div class="capability-item">
+            <mat-icon [color]="processDefinition.hasGraphicalNotation ? 'primary' : 'disabled'">
+              {{ processDefinition.hasGraphicalNotation ? 'check_circle' : 'cancel' }}
+            </mat-icon>
+            <span class="capability-label">Has Graphical Notation</span>
+            <mat-chip [color]="processDefinition.hasGraphicalNotation ? 'accent' : 'basic'">
+              {{ processDefinition.hasGraphicalNotation ? 'Yes' : 'No' }}
+            </mat-chip>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Process ID Details -->
+    <mat-card class="id-details-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>fingerprint</mat-icon>
+          Identifiers
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="id-item">
+          <span class="id-label">Full Process Definition ID:</span>
+          <div class="id-value-container">
+            <code class="id-value">{{ processDefinition.id }}</code>
+            <button mat-icon-button matTooltip="Copy to clipboard" class="copy-button">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
