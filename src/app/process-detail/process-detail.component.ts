@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProcessDefinition } from '../models/process-definition.model';
 import { ProcessDefinitionService } from '../services/process-definition.service';
 
@@ -14,11 +16,15 @@ export class ProcessDetailComponent implements OnInit {
   loading = false;
   error: string | null = null;
   processId: string = '';
+  suspending = false;
+  deleting = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private processDefinitionService: ProcessDefinitionService
+    private processDefinitionService: ProcessDefinitionService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -68,8 +74,119 @@ export class ProcessDetailComponent implements OnInit {
   viewDiagram(): void {
     if (this.processDefinition) {
       this.router.navigate(['/diagram'], { 
-        queryParams: { processId: this.processDefinition.id } 
+        queryParams: { 
+          processId: this.processDefinition.id,
+          processName: this.processDefinition.name || this.processDefinition.key
+        } 
       });
     }
+  }
+
+  suspendProcess(): void {
+    if (!this.processDefinition) return;
+
+    const processName = this.processDefinition.name || this.processDefinition.key;
+    const action = this.processDefinition.suspended ? 'activate' : 'suspend';
+    const actionText = this.processDefinition.suspended ? 'activate' : 'suspend';
+    
+    // Show confirmation dialog
+    const confirmed = confirm(
+      `Are you sure you want to ${actionText} the process definition "${processName}"?\n\n` +
+      `This will ${this.processDefinition.suspended ? 'enable' : 'disable'} new process instances from being started.`
+    );
+
+    if (!confirmed) return;
+
+    this.suspending = true;
+    
+    const operation = this.processDefinition.suspended 
+      ? this.processDefinitionService.activateProcessDefinition(this.processDefinition.id)
+      : this.processDefinitionService.suspendProcessDefinition(this.processDefinition.id);
+
+    operation.subscribe({
+      next: (response) => {
+        this.suspending = false;
+        
+        // Update the local state
+        if (this.processDefinition) {
+          this.processDefinition.suspended = !this.processDefinition.suspended;
+        }
+        
+        const message = this.processDefinition?.suspended 
+          ? `Process "${processName}" has been suspended successfully!`
+          : `Process "${processName}" has been activated successfully!`;
+          
+        this.snackBar.open(message, 'Close', {
+          duration: 5000,
+          panelClass: ['success-snackbar']
+        });
+        
+        console.log(`Process ${action} successful:`, response);
+      },
+      error: (error) => {
+        this.suspending = false;
+        console.error(`Process ${action} failed:`, error);
+        
+        let errorMessage = `Failed to ${actionText} process definition`;
+        if (error.error && error.error.message) {
+          errorMessage = error.error.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        this.snackBar.open(errorMessage, 'Close', {
+          duration: 7000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
+  deleteProcess(): void {
+    if (!this.processDefinition) return;
+
+    const processName = this.processDefinition.name || this.processDefinition.key;
+    
+    // Show confirmation dialog
+    const confirmed = confirm(
+      `Are you sure you want to delete the process definition "${processName}"?\n\n` +
+      `This action cannot be undone and will permanently remove the process definition from the server.`
+    );
+
+    if (!confirmed) return;
+
+    this.deleting = true;
+    
+    this.processDefinitionService.deleteProcessDefinition(this.processDefinition.id).subscribe({
+      next: (response) => {
+        this.deleting = false;
+        
+        this.snackBar.open(`Process "${processName}" has been deleted successfully!`, 'Close', {
+          duration: 5000,
+          panelClass: ['success-snackbar']
+        });
+        
+        console.log('Process deletion successful:', response);
+        
+        // Navigate back to the list after successful deletion
+        this.router.navigate(['/processes']);
+      },
+      error: (error) => {
+        this.deleting = false;
+        console.error('Process deletion failed:', error);
+        
+        let errorMessage = 'Failed to delete process definition';
+        if (error.error && error.error.message) {
+          errorMessage = error.error.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        this.snackBar.open(errorMessage, 'Close', {
+          duration: 7000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
   }
 }

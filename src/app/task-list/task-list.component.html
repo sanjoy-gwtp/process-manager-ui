@@ -1,0 +1,198 @@
+<div class="container">
+  <!-- Header -->
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>assignment</mat-icon>
+        Process Tasks
+      </mat-card-title>
+      <mat-card-subtitle>
+        Manage and track active process tasks
+      </mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading process tasks...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <mat-card class="error-card">
+      <mat-card-content>
+        <div class="error-message">
+          <mat-icon color="warn">error</mat-icon>
+          {{ error }}
+        </div>
+        <div class="error-actions">
+          <button mat-raised-button color="primary" (click)="loadTasks()">
+            <mat-icon>refresh</mat-icon>
+            Retry
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Tasks Table -->
+  <mat-card *ngIf="!loading && !error" class="table-card">
+    <mat-card-content>
+      <div class="table-header">
+        <div class="table-info">
+          <span class="task-count">{{ tasks.length }} task(s)</span>
+        </div>
+        <div class="table-actions">
+          <button mat-icon-button matTooltip="Refresh" (click)="loadTasks()">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table mat-table [dataSource]="tasks" class="full-width">
+          <!-- Task Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Task</th>
+            <td mat-cell *matCellDef="let task">
+              <div class="task-info">
+                <span class="task-name">{{ task.name }}</span>
+                <small class="task-key" *ngIf="task.taskDefinitionKey">{{ task.taskDefinitionKey }}</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Description Column -->
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let task">
+              <span *ngIf="task.description; else noDescription">{{ task.description }}</span>
+              <ng-template #noDescription>
+                <span class="no-value">-</span>
+              </ng-template>
+            </td>
+          </ng-container>
+
+          <!-- Assignee Column -->
+          <ng-container matColumnDef="assignee">
+            <th mat-header-cell *matHeaderCellDef>Assignee</th>
+            <td mat-cell *matCellDef="let task">
+              <div class="assignee-info">
+                <mat-chip *ngIf="task.assignee" color="accent" class="assignee-chip">
+                  <mat-icon>person</mat-icon>
+                  {{ task.assignee }}
+                </mat-chip>
+                <span *ngIf="!task.assignee" class="no-value">Unassigned</span>
+                <small class="owner-info" *ngIf="task.owner && task.owner !== task.assignee">
+                  Owner: {{ task.owner }}
+                </small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Priority Column -->
+          <ng-container matColumnDef="priority">
+            <th mat-header-cell *matHeaderCellDef>Priority</th>
+            <td mat-cell *matCellDef="let task">
+              <mat-chip [color]="getPriorityColor(task.priority)" class="priority-chip">
+                <mat-icon class="priority-icon">{{ getPriorityIcon(task.priority) }}</mat-icon>
+                {{ getPriorityText(task.priority) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Created Column -->
+          <ng-container matColumnDef="created">
+            <th mat-header-cell *matHeaderCellDef>Created</th>
+            <td mat-cell *matCellDef="let task">
+              <div class="time-info">
+                <span class="create-time">{{ formatCreateTime(task.createTime) }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Due Date Column -->
+          <ng-container matColumnDef="dueDate">
+            <th mat-header-cell *matHeaderCellDef>Due Date</th>
+            <td mat-cell *matCellDef="let task">
+              <div class="due-date-info">
+                <span *ngIf="task.dueDate; else noDueDate" 
+                      [class.overdue]="isOverdue(task.dueDate)">
+                  {{ formatDueDate(task.dueDate) }}
+                </span>
+                <ng-template #noDueDate>
+                  <span class="no-value">No due date</span>
+                </ng-template>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Process Instance Column -->
+          <ng-container matColumnDef="processInstance">
+            <th mat-header-cell *matHeaderCellDef>Process Instance</th>
+            <td mat-cell *matCellDef="let task">
+              <div class="process-instance-info">
+                <code class="instance-id">{{ task.processInstanceId | slice:0:8 }}...</code>
+                <button mat-icon-button matTooltip="View Instance Details" 
+                        (click)="viewProcessInstance(task)">
+                  <mat-icon>open_in_new</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Category Column -->
+          <ng-container matColumnDef="category">
+            <th mat-header-cell *matHeaderCellDef>Category</th>
+            <td mat-cell *matCellDef="let task">
+              <span *ngIf="task.category; else noCategory">{{ task.category }}</span>
+              <ng-template #noCategory>
+                <span class="no-value">-</span>
+              </ng-template>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let task">
+              <button mat-icon-button matTooltip="Task Details" (click)="viewTaskDetails(task)">
+                <mat-icon>info</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      matTooltip="Complete Task" 
+                      color="primary"
+                      (click)="completeTask(task)">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      *ngIf="!task.assignee"
+                      matTooltip="Claim Task" 
+                      color="accent"
+                      (click)="claimTask(task)">
+                <mat-icon>person_add</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      *ngIf="task.formKey"
+                      matTooltip="Open Form" 
+                      (click)="openTaskForm(task)">
+                <mat-icon>description</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="tasks.length === 0" class="empty-state">
+        <mat-icon>assignment_turned_in</mat-icon>
+        <h3>No Active Tasks</h3>
+        <p>There are currently no active process tasks to display.</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

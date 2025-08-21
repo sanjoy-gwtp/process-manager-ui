@@ -1,0 +1,164 @@
+<div class="container">
+  <!-- Header -->
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>play_circle</mat-icon>
+        Process Instances
+      </mat-card-title>
+      <mat-card-subtitle>
+        View and manage running process instances
+      </mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading process instances...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <mat-card class="error-card">
+      <mat-card-content>
+        <div class="error-message">
+          <mat-icon color="warn">error</mat-icon>
+          {{ error }}
+        </div>
+        <div class="error-actions">
+          <button mat-raised-button color="primary" (click)="loadProcessInstances()">
+            <mat-icon>refresh</mat-icon>
+            Retry
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Process Instances Table -->
+  <mat-card *ngIf="!loading && !error" class="table-card">
+    <mat-card-content>
+      <div class="table-header">
+        <div class="table-info">
+          <span class="instance-count">{{ processInstances.length }} instance(s)</span>
+        </div>
+        <div class="table-actions">
+          <button mat-icon-button matTooltip="Refresh" (click)="loadProcessInstances()">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table mat-table [dataSource]="processInstances" class="full-width">
+          <!-- Process Definition Name Column -->
+          <ng-container matColumnDef="processName">
+            <th mat-header-cell *matHeaderCellDef>Process</th>
+            <td mat-cell *matCellDef="let instance">
+              <div class="process-info">
+                <span class="process-name">{{ instance.processDefinitionName || instance.processDefinitionKey }}</span>
+                <small class="process-key">{{ instance.processDefinitionKey }}</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Instance ID Column -->
+          <ng-container matColumnDef="instanceId">
+            <th mat-header-cell *matHeaderCellDef>Instance ID</th>
+            <td mat-cell *matCellDef="let instance">
+              <code class="instance-id">{{ instance.id | slice:0:8 }}...</code>
+              <button mat-icon-button matTooltip="Copy full ID" (click)="copyToClipboard(instance.id)">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <!-- Version Column -->
+          <ng-container matColumnDef="version">
+            <th mat-header-cell *matHeaderCellDef>Version</th>
+            <td mat-cell *matCellDef="let instance">
+              <mat-chip color="primary">v{{ instance.processDefinitionVersion }}</mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Start Time Column -->
+          <ng-container matColumnDef="startTime">
+            <th mat-header-cell *matHeaderCellDef>Started</th>
+            <td mat-cell *matCellDef="let instance">
+              <div class="time-info">
+                <span class="start-time">{{ formatStartTime(instance.startTime) }}</span>
+                <small class="start-user" *ngIf="instance.startUserId">by {{ instance.startUserId }}</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let instance">
+              <mat-chip [color]="getStatusColor(instance)" class="status-chip">
+                <mat-icon class="status-icon">{{ getStatusIcon(instance) }}</mat-icon>
+                {{ getStatusText(instance) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Business Key Column -->
+          <ng-container matColumnDef="businessKey">
+            <th mat-header-cell *matHeaderCellDef>Business Key</th>
+            <td mat-cell *matCellDef="let instance">
+              <span *ngIf="instance.businessKey; else noBusinessKey">{{ instance.businessKey }}</span>
+              <ng-template #noBusinessKey>
+                <span class="no-value">-</span>
+              </ng-template>
+            </td>
+          </ng-container>
+
+          <!-- Current Activity Column -->
+          <ng-container matColumnDef="activity">
+            <th mat-header-cell *matHeaderCellDef>Current Activity</th>
+            <td mat-cell *matCellDef="let instance">
+              <span *ngIf="instance.activityId; else noActivity">{{ instance.activityId }}</span>
+              <ng-template #noActivity>
+                <span class="no-value">-</span>
+              </ng-template>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let instance">
+              <button mat-icon-button matTooltip="View Details" (click)="viewInstanceDetails(instance)">
+                <mat-icon>info</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      matTooltip="View Process Diagram" 
+                      (click)="viewProcessDiagram(instance)">
+                <mat-icon>account_tree</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      [matTooltip]="instance.suspended ? 'Activate Instance' : 'Suspend Instance'"
+                      [color]="instance.suspended ? 'primary' : 'warn'"
+                      *ngIf="!instance.ended"
+                      (click)="toggleInstanceSuspension(instance)">
+                <mat-icon>{{ instance.suspended ? 'play_arrow' : 'pause' }}</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="processInstances.length === 0" class="empty-state">
+        <mat-icon>inbox</mat-icon>
+        <h3>No Process Instances Found</h3>
+        <p>There are currently no active process instances.</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

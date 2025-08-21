@@ -44,7 +44,7 @@
 
 /* Header Card */
 .header-card {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
   color: white;
 }
 
@@ -89,7 +89,7 @@
 }
 
 .action-buttons button {
-  color: #1976d2;
+  color: #ff9800;
   background-color: white;
 }
 
@@ -97,9 +97,114 @@
   background-color: #f5f5f5;
 }
 
+.action-buttons button[disabled] {
+  opacity: 0.6;
+}
+
+.action-buttons button mat-icon {
+  margin-right: 8px;
+}
+
+/* Overview Card */
+.overview-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.25rem;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.overview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background-color: #fafafa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.priority-item {
+  border-color: #ff9800;
+  background-color: #fff3e0;
+}
+
+.assignee-item {
+  border-color: #4caf50;
+  background-color: #f1f8e9;
+}
+
+.overview-label {
+  font-weight: 500;
+  color: #757575;
+  font-size: 0.875rem;
+}
+
+.overview-value {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.time-main {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.time-sub {
+  color: #757575;
+  font-size: 0.75rem;
+}
+
+.overdue {
+  color: #f44336;
+  font-weight: 600;
+}
+
+.priority-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  align-self: flex-start;
+}
+
+.priority-icon {
+  font-size: 1.2rem !important;
+  width: 1.2rem !important;
+  height: 1.2rem !important;
+}
+
+.assignee-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+}
+
+.unassigned {
+  color: #ff9800;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.owner-info {
+  color: #757575;
+  font-size: 0.75rem;
+  margin-top: 4px;
+}
+
 /* Info Card */
 .info-card mat-card-title,
-.capabilities-card mat-card-title,
+.process-card mat-card-title,
+.assignment-card mat-card-title,
 .id-details-card mat-card-title {
   display: flex;
   align-items: center;
@@ -107,14 +212,16 @@
   font-size: 1.25rem;
 }
 
-.info-grid {
+.info-grid,
+.process-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 16px;
   margin-top: 16px;
 }
 
-.info-item {
+.info-item,
+.process-item {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -124,45 +231,85 @@
   background-color: #fafafa;
 }
 
-.info-label {
+.info-label,
+.process-label {
   font-weight: 500;
   color: #757575;
   font-size: 0.875rem;
 }
 
-.info-value {
+.info-value,
+.process-value {
   font-size: 1rem;
 }
 
-.info-value code {
+.info-value code,
+.process-value {
   font-family: 'Roboto Mono', monospace;
   background-color: #f5f5f5;
   padding: 2px 6px;
   border-radius: 4px;
   border: 1px solid #e0e0e0;
+  word-break: break-all;
 }
 
-/* Capabilities Card */
-.capabilities-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 16px;
-}
-
-.capability-item {
+.process-value-container {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px;
+  gap: 8px;
+  padding: 8px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   background-color: #fafafa;
 }
 
-.capability-label {
+.process-value {
   flex-grow: 1;
-  font-weight: 500;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.875rem;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* Assignment Card */
+.assignment-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.current-assignment h4,
+.assignment-actions h4 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.assignment-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.current-assignee-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  font-size: 1rem;
+}
+
+.assignment-date {
+  color: #757575;
+  font-size: 0.875rem;
+}
+
+.action-buttons-section {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 /* ID Details Card */
@@ -196,50 +343,6 @@
   word-break: break-all;
 }
 
-.copy-button {
-  flex-shrink: 0;
-}
-
-/* Status enhancements */
-.status-item {
-  border: 2px solid transparent;
-  border-radius: 8px;
-  padding: 16px !important;
-  background-color: #ffffff !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.status-chip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 500;
-}
-
-.status-icon {
-  font-size: 1.2rem !important;
-  width: 1.2rem !important;
-  height: 1.2rem !important;
-}
-
-/* Action button enhancements */
-.action-buttons button[disabled] {
-  opacity: 0.6;
-}
-
-.action-buttons button mat-icon {
-  margin-right: 8px;
-}
-
-/* Suspend button specific styling */
-button[color="warn"] {
-  background-color: #ff9800 !important;
-}
-
-button[color="warn"]:hover:not([disabled]) {
-  background-color: #f57c00 !important;
-}
-
 /* Spinning icon for loading state */
 button mat-icon[ng-reflect-ng-if="true"] {
   animation: spin 1s linear infinite;
@@ -270,21 +373,28 @@ button mat-icon[ng-reflect-ng-if="true"] {
   
   .action-buttons button {
     flex: 1;
-    min-width: 140px;
+    min-width: 120px;
     margin: 4px;
   }
   
-  .info-grid {
+  .overview-grid {
     grid-template-columns: 1fr;
   }
   
-  .capability-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+  .info-grid,
+  .process-grid {
+    grid-template-columns: 1fr;
   }
   
-  .status-item {
-    padding: 12px !important;
+  .overview-item {
+    padding: 12px;
+  }
+  
+  .action-buttons-section {
+    flex-direction: column;
+  }
+  
+  .action-buttons-section button {
+    width: 100%;
   }
 }

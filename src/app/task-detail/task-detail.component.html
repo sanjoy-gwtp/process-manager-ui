@@ -1,0 +1,277 @@
+<div class="container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading task details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <mat-card class="error-card">
+      <mat-card-content>
+        <div class="error-message">
+          <mat-icon color="warn">error</mat-icon>
+          {{ error }}
+        </div>
+        <div class="error-actions">
+          <button mat-raised-button color="primary" (click)="loadTask()">
+            <mat-icon>refresh</mat-icon>
+            Retry
+          </button>
+          <button mat-button (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+            Back to Tasks
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Detail View -->
+  <div *ngIf="task && !loading" class="detail-container">
+    <!-- Header -->
+    <mat-card class="header-card">
+      <mat-card-header>
+        <div class="header-content">
+          <button mat-icon-button (click)="goBack()" class="back-button">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <div class="title-section">
+            <mat-card-title>{{ task.name }}</mat-card-title>
+            <mat-card-subtitle *ngIf="task.description">
+              {{ task.description }}
+            </mat-card-subtitle>
+            <mat-card-subtitle *ngIf="!task.description">
+              Task ID: {{ task.id | slice:0:12 }}...
+            </mat-card-subtitle>
+          </div>
+          <div class="spacer"></div>
+          <div class="action-buttons">
+            <button mat-raised-button 
+                    color="primary"
+                    [disabled]="completing"
+                    (click)="completeTask()">
+              <mat-icon *ngIf="!completing">check_circle</mat-icon>
+              <mat-icon *ngIf="completing">refresh</mat-icon>
+              {{ completing ? 'Completing...' : 'Complete Task' }}
+            </button>
+            <button mat-raised-button 
+                    color="accent" 
+                    *ngIf="!task.assignee"
+                    [disabled]="claiming"
+                    (click)="claimTask()">
+              <mat-icon *ngIf="!claiming">person_add</mat-icon>
+              <mat-icon *ngIf="claiming">refresh</mat-icon>
+              {{ claiming ? 'Claiming...' : 'Claim Task' }}
+            </button>
+            <button mat-raised-button 
+                    color="warn" 
+                    *ngIf="task.assignee"
+                    [disabled]="unclaiming"
+                    (click)="unclaimTask()">
+              <mat-icon *ngIf="!unclaiming">person_remove</mat-icon>
+              <mat-icon *ngIf="unclaiming">refresh</mat-icon>
+              {{ unclaiming ? 'Unclaiming...' : 'Unclaim Task' }}
+            </button>
+            <button mat-raised-button 
+                    color="accent" 
+                    *ngIf="task.formKey"
+                    (click)="openTaskForm()">
+              <mat-icon>description</mat-icon>
+              Open Form
+            </button>
+          </div>
+        </div>
+      </mat-card-header>
+    </mat-card>
+
+    <!-- Task Overview -->
+    <mat-card class="overview-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>dashboard</mat-icon>
+          Task Overview
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="overview-grid">
+          <div class="overview-item priority-item">
+            <div class="overview-label">Priority</div>
+            <mat-chip [color]="getPriorityColor()" class="priority-chip">
+              <mat-icon class="priority-icon">{{ getPriorityIcon() }}</mat-icon>
+              {{ getPriorityText() }} ({{ task.priority }})
+            </mat-chip>
+          </div>
+          <div class="overview-item">
+            <div class="overview-label">Created</div>
+            <div class="overview-value">
+              <div class="time-main">{{ formatCreateTime(task.createTime) }}</div>
+            </div>
+          </div>
+          <div class="overview-item" *ngIf="task.dueDate">
+            <div class="overview-label">Due Date</div>
+            <div class="overview-value">
+              <div class="time-main" [class.overdue]="isOverdue()">{{ formatDueDate(task.dueDate) }}</div>
+              <div class="time-sub" *ngIf="isOverdue()">Overdue</div>
+            </div>
+          </div>
+          <div class="overview-item assignee-item">
+            <div class="overview-label">Assignment</div>
+            <div class="overview-value">
+              <mat-chip *ngIf="task.assignee" color="accent" class="assignee-chip">
+                <mat-icon>person</mat-icon>
+                {{ task.assignee }}
+              </mat-chip>
+              <span *ngIf="!task.assignee" class="unassigned">Unassigned</span>
+              <small class="owner-info" *ngIf="task.owner && task.owner !== task.assignee">
+                Owner: {{ task.owner }}
+              </small>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Task Information -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>info</mat-icon>
+          Task Information
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Task Definition Key:</span>
+            <code class="info-value">{{ task.taskDefinitionKey }}</code>
+          </div>
+          <div class="info-item" *ngIf="task.category">
+            <span class="info-label">Category:</span>
+            <span class="info-value">{{ task.category }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Tenant ID:</span>
+            <span class="info-value">{{ task.tenantId || 'Default' }}</span>
+          </div>
+          <div class="info-item" *ngIf="task.formKey">
+            <span class="info-label">Form Key:</span>
+            <code class="info-value">{{ task.formKey }}</code>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Process Context -->
+    <mat-card class="process-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>account_tree</mat-icon>
+          Process Context
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="process-grid">
+          <div class="process-item">
+            <span class="process-label">Process Instance:</span>
+            <div class="process-value-container">
+              <code class="process-value">{{ task.processInstanceId }}</code>
+              <button mat-icon-button matTooltip="View Process Instance" (click)="viewProcessInstance()">
+                <mat-icon>open_in_new</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Copy to clipboard" (click)="copyToClipboard(task.processInstanceId)">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div class="process-item">
+            <span class="process-label">Process Definition:</span>
+            <div class="process-value-container">
+              <code class="process-value">{{ task.processDefinitionId }}</code>
+              <button mat-icon-button matTooltip="View Process Definition" (click)="viewProcessDefinition()">
+                <mat-icon>open_in_new</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Copy to clipboard" (click)="copyToClipboard(task.processDefinitionId)">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div class="process-item">
+            <span class="process-label">Execution ID:</span>
+            <div class="process-value-container">
+              <code class="process-value">{{ task.executionId }}</code>
+              <button mat-icon-button matTooltip="Copy to clipboard" (click)="copyToClipboard(task.executionId)">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Task Assignment Management -->
+    <mat-card class="assignment-card" *ngIf="task.assignee">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>people</mat-icon>
+          Assignment Management
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="assignment-section">
+          <div class="current-assignment">
+            <h4>Current Assignment</h4>
+            <div class="assignment-info">
+              <mat-chip color="accent" class="current-assignee-chip">
+                <mat-icon>person</mat-icon>
+                {{ task.assignee }}
+              </mat-chip>
+              <span class="assignment-date">Assigned on {{ formatCreateTime(task.createTime) }}</span>
+            </div>
+          </div>
+          
+          <div class="assignment-actions">
+            <h4>Assignment Actions</h4>
+            <div class="action-buttons-section">
+              <button mat-stroked-button 
+                      color="primary"
+                      (click)="reassignTask()">
+                <mat-icon>person_add</mat-icon>
+                Reassign Task
+              </button>
+              <button mat-stroked-button 
+                      color="warn"
+                      [disabled]="unclaiming"
+                      (click)="unclaimTask()">
+                <mat-icon *ngIf="!unclaiming">person_remove</mat-icon>
+                <mat-icon *ngIf="unclaiming">refresh</mat-icon>
+                {{ unclaiming ? 'Unclaiming...' : 'Unassign Task' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Task ID Details -->
+    <mat-card class="id-details-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>fingerprint</mat-icon>
+          Task Identifier
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="id-item">
+          <span class="id-label">Full Task ID:</span>
+          <div class="id-value-container">
+            <code class="id-value">{{ task.id }}</code>
+            <button mat-icon-button matTooltip="Copy to clipboard" (click)="copyToClipboard(task.id)">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

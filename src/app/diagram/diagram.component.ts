@@ -1,4 +1,7 @@
-import {AfterContentInit, Component, ElementRef, OnDestroy, ViewChild} from '@angular/core';
+import {AfterContentInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   BpmnPropertiesPanelModule,
   BpmnPropertiesProviderModule,
@@ -7,6 +10,8 @@ import {
 import Modeler from 'bpmn-js/lib/Modeler';
 import customPropertiesProvider from '../custom-properties-provider/custom-property-provider';
 import {from, Observable} from 'rxjs';
+import { ProcessDefinitionService } from '../services/process-definition.service';
+import { DeploymentDialogComponent, DeploymentDialogData, DeploymentDialogResult } from '../deployment-dialog/deployment-dialog.component';
 
 const custom = require('../custom-properties-provider/descriptors/custom.json');
 
@@ -18,7 +23,7 @@ const custom = require('../custom-properties-provider/descriptors/custom.json');
   ],
   standalone: false
 })
-export class DiagramComponent implements AfterContentInit, OnDestroy {
+export class DiagramComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * You may include a different variant of BpmnJS:
@@ -28,6 +33,12 @@ export class DiagramComponent implements AfterContentInit, OnDestroy {
    * bpmn-modeler - bootstraps a full-fledged BPMN editor
    */
    bpmnJS: Modeler;
+   loading = false;
+   error: string | null = null;
+   processId: string | null = null;
+   processName: string | null = null;
+   propertiesCollapsed = false;
+   deploying = false;
 
   // retrieve DOM element reference
   @ViewChild('diagramRef', {static: true}) diagramRef: ElementRef | undefined;
@@ -47,7 +58,12 @@ export class DiagramComponent implements AfterContentInit, OnDestroy {
     </bpmndi:BPMNDiagram>
   </bpmn2:definitions>`;
 
-  constructor() {
+  constructor(
+    private route: ActivatedRoute,
+    private processDefinitionService: ProcessDefinitionService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {
     this.bpmnJS = new Modeler({
       container: this.diagramRef?.nativeElement,
       propertiesPanel: {
@@ -65,6 +81,13 @@ export class DiagramComponent implements AfterContentInit, OnDestroy {
     })
   }
 
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      this.processId = params['processId'];
+      this.processName = params['processName'] || null;
+    });
+  }
+
   ngAfterContentInit(): void {
     // attach BpmnJS instance to DOM element
     this.bpmnJS!.attachTo(this.diagramRef!.nativeElement);
@@ -73,7 +96,40 @@ export class DiagramComponent implements AfterContentInit, OnDestroy {
 
     // @ts-ignore
     propertiesPanel.attachTo(this.propertiesRef!.nativeElement);
-    this.importDiagram(this.xml);
+
+    // Load diagram from API if processId is provided, otherwise load default
+    if (this.processId) {
+      this.loadProcessDiagram(this.processId);
+    } else {
+      this.importDiagram(this.xml);
+    }
+  }
+
+  loadProcessDiagram(processId: string): void {
+    this.loading = true;
+    this.error = null;
+
+    this.processDefinitionService.getProcessDefinitionXml(processId).subscribe({
+      next: (xmlData) => {
+        this.importDiagram(xmlData).subscribe({
+          next: () => {
+            this.loading = false;
+          },
+          error: (err) => {
+            this.error = 'Failed to load process diagram';
+            this.loading = false;
+            console.error('Error importing diagram XML:', err);
+          }
+        });
+      },
+      error: (err) => {
+        this.error = 'Failed to fetch process diagram from server';
+        this.loading = false;
+        console.error('Error loading process XML:', err);
+        // Fallback to default diagram
+        this.importDiagram(this.xml);
+      }
+    });
   }
 
   /**
@@ -122,6 +178,92 @@ export class DiagramComponent implements AfterContentInit, OnDestroy {
 
   resetDiagram(): void {
     this.importDiagram(this.xml);
+  }
+
+  toggleProperties(): void {
+    this.propertiesCollapsed = !this.propertiesCollapsed;
+  }
+
+  deployDiagram(): void {
+    if (!this.bpmnJS) {
+      this.snackBar.open('BPMN modeler not initialized', 'Close', { duration: 3000 });
+      return;
+    }
+
+    // Extract current process name from the diagram if available
+    let currentProcessName = this.processName || '';
+    
+    const dialogData: DeploymentDialogData = {
+      currentName: currentProcessName,
+      title: 'Deploy Process Definition',
+      message: 'Enter a name for this process deployment. This will create or update the process definition on the server.'
+    };
+
+    const dialogRef = this.dialog.open(DeploymentDialogComponent, {
+      width: '450px',
+      data: dialogData,
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((result: DeploymentDialogResult) => {
+      if (result && result.confirmed) {
+        this.performDeployment(result.processName);
+      }
+    });
+  }
+
+  private performDeployment(processName: string): void {
+    this.deploying = true;
+
+    this.bpmnJS.saveXML({ format: true }).then((result) => {
+      if (result.xml) {
+        this.processDefinitionService.deployProcessDefinition(result.xml, processName).subscribe({
+          next: (response) => {
+            this.deploying = false;
+            this.snackBar.open(
+              `Process "${processName}" deployed successfully!`, 
+              'Close', 
+              { 
+                duration: 5000,
+                panelClass: ['success-snackbar']
+              }
+            );
+            
+            // Update the current process name
+            this.processName = processName;
+            
+            console.log('Deployment successful:', response);
+          },
+          error: (error) => {
+            this.deploying = false;
+            console.error('Deployment failed:', error);
+            
+            let errorMessage = 'Failed to deploy process definition';
+            if (error.error && error.error.message) {
+              errorMessage = error.error.message;
+            } else if (error.message) {
+              errorMessage = error.message;
+            }
+            
+            this.snackBar.open(
+              errorMessage, 
+              'Close', 
+              { 
+                duration: 7000,
+                panelClass: ['error-snackbar']
+              }
+            );
+          }
+        });
+      } else {
+        this.deploying = false;
+        this.snackBar.open('Failed to export diagram XML', 'Close', { duration: 3000 });
+      }
+    }).catch((error) => {
+      this.deploying = false;
+      console.error('Error exporting XML:', error);
+      this.snackBar.open('Failed to export diagram', 'Close', { duration: 3000 });
+    });
   }
 
   ngOnDestroy(): void {

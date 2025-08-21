@@ -44,17 +44,34 @@
           </div>
           <div class="spacer"></div>
           <div class="action-buttons">
+            <button mat-raised-button 
+                    [color]="processDefinition.suspended ? 'primary' : 'warn'"
+                    [disabled]="suspending || deleting"
+                    (click)="suspendProcess()">
+              <mat-icon *ngIf="!suspending">{{ processDefinition.suspended ? 'play_arrow' : 'pause' }}</mat-icon>
+              <mat-icon *ngIf="suspending">refresh</mat-icon>
+              {{ suspending ? 'Processing...' : (processDefinition.suspended ? 'Activate' : 'Suspend') }}
+            </button>
             <button mat-raised-button color="primary" 
-                    *ngIf="processDefinition.hasStartFormKey" 
+                    *ngIf="processDefinition.hasStartFormKey && !processDefinition.suspended" 
+                    [disabled]="deleting"
                     (click)="startProcess()">
               <mat-icon>play_arrow</mat-icon>
               Start Process
             </button>
             <button mat-raised-button color="accent" 
                     *ngIf="processDefinition.hasGraphicalNotation" 
+                    [disabled]="deleting"
                     (click)="viewDiagram()">
               <mat-icon>account_tree</mat-icon>
               View Diagram
+            </button>
+            <button mat-raised-button color="warn" 
+                    [disabled]="suspending || deleting"
+                    (click)="deleteProcess()">
+              <mat-icon *ngIf="!deleting">delete</mat-icon>
+              <mat-icon *ngIf="deleting">refresh</mat-icon>
+              {{ deleting ? 'Deleting...' : 'Delete' }}
             </button>
           </div>
         </div>
@@ -79,9 +96,10 @@
             <span class="info-label">Version:</span>
             <mat-chip class="info-value">v{{ processDefinition.version }}</mat-chip>
           </div>
-          <div class="info-item">
+          <div class="info-item status-item">
             <span class="info-label">Status:</span>
-            <mat-chip [color]="processDefinition.suspended ? 'warn' : 'primary'" class="info-value">
+            <mat-chip [color]="processDefinition.suspended ? 'warn' : 'primary'" class="info-value status-chip">
+              <mat-icon class="status-icon">{{ processDefinition.suspended ? 'pause_circle' : 'play_circle' }}</mat-icon>
               {{ processDefinition.suspended ? 'Suspended' : 'Active' }}
             </mat-chip>
           </div>

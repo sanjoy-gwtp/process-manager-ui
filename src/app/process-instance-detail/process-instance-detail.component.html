@@ -1,0 +1,278 @@
+<div class="container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading process instance details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <mat-card class="error-card">
+      <mat-card-content>
+        <div class="error-message">
+          <mat-icon color="warn">error</mat-icon>
+          {{ error }}
+        </div>
+        <div class="error-actions">
+          <button mat-raised-button color="primary" (click)="loadProcessInstance()">
+            <mat-icon>refresh</mat-icon>
+            Retry
+          </button>
+          <button mat-button (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+            Back to Instances
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Detail View -->
+  <div *ngIf="processInstance && !loading" class="detail-container">
+    <!-- Header -->
+    <mat-card class="header-card">
+      <mat-card-header>
+        <div class="header-content">
+          <button mat-icon-button (click)="goBack()" class="back-button">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <div class="title-section">
+            <mat-card-title>{{ processInstance.processDefinitionName || processInstance.processDefinitionKey }}</mat-card-title>
+            <mat-card-subtitle>
+              Process Instance • {{ processInstance.id | slice:0:8 }}...
+            </mat-card-subtitle>
+          </div>
+          <div class="spacer"></div>
+          <div class="action-buttons">
+            <button mat-raised-button 
+                    [color]="processInstance.suspended ? 'primary' : 'warn'"
+                    [disabled]="suspending || processInstance.ended"
+                    (click)="toggleSuspension()">
+              <mat-icon *ngIf="!suspending">{{ processInstance.suspended ? 'play_arrow' : 'pause' }}</mat-icon>
+              <mat-icon *ngIf="suspending">refresh</mat-icon>
+              {{ suspending ? 'Processing...' : (processInstance.suspended ? 'Activate' : 'Suspend') }}
+            </button>
+            <button mat-raised-button color="accent" 
+                    (click)="viewDiagram()">
+              <mat-icon>account_tree</mat-icon>
+              View Diagram
+            </button>
+            <button mat-raised-button color="warn" 
+                    [disabled]="suspending || processInstance.ended"
+                    (click)="terminateInstance()">
+              <mat-icon>stop</mat-icon>
+              Terminate
+            </button>
+          </div>
+        </div>
+      </mat-card-header>
+    </mat-card>
+
+    <!-- Status Overview -->
+    <mat-card class="status-overview-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>dashboard</mat-icon>
+          Status Overview
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="status-grid">
+          <div class="status-item">
+            <div class="status-label">Current Status</div>
+            <mat-chip [color]="getStatusColor()" class="status-chip">
+              <mat-icon class="status-icon">{{ getStatusIcon() }}</mat-icon>
+              {{ getStatusText() }}
+            </mat-chip>
+          </div>
+          <div class="status-item">
+            <div class="status-label">Started</div>
+            <div class="status-value">
+              <div class="time-main">{{ formatStartTime(processInstance.startTime) }}</div>
+              <div class="time-sub" *ngIf="processInstance.startUserId">by {{ processInstance.startUserId }}</div>
+            </div>
+          </div>
+          <div class="status-item">
+            <div class="status-label">Duration</div>
+            <div class="status-value">
+              <div class="time-main">{{ calculateDuration() }}</div>
+              <div class="time-sub">{{ processInstance.ended ? 'Completed' : 'Running' }}</div>
+            </div>
+          </div>
+          <div class="status-item" *ngIf="processInstance.activityId">
+            <div class="status-label">Current Activity</div>
+            <div class="status-value">
+              <code class="activity-code">{{ processInstance.activityId }}</code>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Process Information -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>info</mat-icon>
+          Process Information
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Process Definition Key:</span>
+            <code class="info-value">{{ processInstance.processDefinitionKey }}</code>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Process Definition ID:</span>
+            <div class="id-value-container">
+              <code class="info-value">{{ processInstance.processDefinitionId }}</code>
+              <button mat-icon-button matTooltip="Copy to clipboard" (click)="copyToClipboard(processInstance.processDefinitionId)">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Version:</span>
+            <mat-chip class="info-value" color="primary">v{{ processInstance.processDefinitionVersion }}</mat-chip>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Deployment ID:</span>
+            <code class="info-value">{{ processInstance.deploymentId }}</code>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Business Key:</span>
+            <span class="info-value">{{ processInstance.businessKey || 'Not set' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Tenant ID:</span>
+            <span class="info-value">{{ processInstance.tenantId || 'Default' }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Execution Details -->
+    <mat-card class="execution-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>settings</mat-icon>
+          Execution Details
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="execution-grid">
+          <div class="execution-item">
+            <span class="execution-label">Root Process Instance:</span>
+            <div class="id-value-container">
+              <code class="execution-value">{{ processInstance.rootProcessInstanceId }}</code>
+              <button mat-icon-button matTooltip="Copy to clipboard" (click)="copyToClipboard(processInstance.rootProcessInstanceId)">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div class="execution-item" *ngIf="processInstance.superExecutionId">
+            <span class="execution-label">Super Execution ID:</span>
+            <div class="id-value-container">
+              <code class="execution-value">{{ processInstance.superExecutionId }}</code>
+              <button mat-icon-button matTooltip="Copy to clipboard" (click)="copyToClipboard(processInstance.superExecutionId)">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div class="execution-item" *ngIf="processInstance.description">
+            <span class="execution-label">Description:</span>
+            <span class="execution-value">{{ processInstance.description }}</span>
+          </div>
+          <div class="execution-item" *ngIf="processInstance.localizedName">
+            <span class="execution-label">Localized Name:</span>
+            <span class="execution-value">{{ processInstance.localizedName }}</span>
+          </div>
+          <div class="execution-item" *ngIf="processInstance.localizedDescription">
+            <span class="execution-label">Localized Description:</span>
+            <span class="execution-value">{{ processInstance.localizedDescription }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Current Status Diagram -->
+    <mat-card class="diagram-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>account_tree</mat-icon>
+          Current Status Diagram
+        </mat-card-title>
+        <div class="spacer"></div>
+        <div class="diagram-actions">
+          <button mat-icon-button matTooltip="Refresh diagram" (click)="loadInstanceDiagram()">
+            <mat-icon>refresh</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="View full diagram" (click)="viewDiagram()">
+            <mat-icon>open_in_new</mat-icon>
+          </button>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        <!-- Diagram Loading State -->
+        <div *ngIf="diagramLoading" class="diagram-loading">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Loading current status diagram...</p>
+        </div>
+
+        <!-- Diagram Error State -->
+        <div *ngIf="diagramError && !diagramLoading" class="diagram-error">
+          <mat-icon color="warn">error</mat-icon>
+          <span>{{ diagramError }}</span>
+          <button mat-button color="primary" (click)="loadInstanceDiagram()">
+            <mat-icon>refresh</mat-icon>
+            Retry
+          </button>
+        </div>
+
+        <!-- Diagram Display -->
+        <div *ngIf="diagramImageUrl && !diagramLoading && !diagramError" class="diagram-container">
+          <img [src]="diagramImageUrl" 
+               alt="Process Instance Current Status" 
+               class="diagram-image"
+               (error)="onDiagramImageError()"
+               (load)="onDiagramImageLoad()">
+          <div class="diagram-info">
+            <mat-chip color="primary">
+              <mat-icon>info</mat-icon>
+              Current position highlighted in diagram
+            </mat-chip>
+          </div>
+        </div>
+
+        <!-- No Diagram Available -->
+        <div *ngIf="!diagramImageUrl && !diagramLoading && !diagramError && diagramLoaded" class="no-diagram">
+          <mat-icon>image_not_supported</mat-icon>
+          <h4>No Visual Diagram Available</h4>
+          <p>This process instance doesn't have a visual diagram representation.</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Instance ID Card -->
+    <mat-card class="id-details-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>fingerprint</mat-icon>
+          Instance Identifier
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="id-item">
+          <span class="id-label">Full Process Instance ID:</span>
+          <div class="id-value-container">
+            <code class="id-value">{{ processInstance.id }}</code>
+            <button mat-icon-button matTooltip="Copy to clipboard" (click)="copyToClipboard(processInstance.id)">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

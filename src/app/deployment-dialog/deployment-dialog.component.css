@@ -1,0 +1,33 @@
+.deployment-dialog {
+  min-width: 400px;
+}
+
+.dialog-message {
+  margin-bottom: 16px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.full-width {
+  width: 100%;
+}
+
+mat-dialog-content {
+  padding: 0 24px 20px 24px;
+}
+
+mat-dialog-actions {
+  padding: 8px 24px 16px 24px;
+  gap: 8px;
+}
+
+mat-form-field {
+  margin-bottom: 8px;
+}
+
+@media (max-width: 480px) {
+  .deployment-dialog {
+    min-width: 300px;
+    max-width: 90vw;
+  }
+}

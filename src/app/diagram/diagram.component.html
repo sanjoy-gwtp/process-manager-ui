@@ -1,8 +1,64 @@
-<div class="main-container">
+<div class="container">
+  <!-- Header -->
+  <div class="header-section" *ngIf="processId">
+    <h2 class="process-title">
+      <span *ngIf="processName">{{ processName }}</span>
+      <span *ngIf="!processName">Process Diagram</span>
+    </h2>
+    <div class="process-info" *ngIf="processId">
+      <code class="process-id">{{ processId }}</code>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading process diagram...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <div class="error-message">
+      <span class="error-icon">⚠️</span>
+      {{ error }}
+    </div>
+    <button class="retry-button" type="button" (click)="loadProcessDiagram(processId!)">
+      Retry
+    </button>
+  </div>
+
+  <!-- Main BPMN Container -->
+  <div class="main-container" [class.hidden]="loading">
     <div #diagramRef class="diagram-container"></div>
-    <div #propertiesRef class="properties-container"></div>
-</div>
-<div class="button-container">
-  <button class="button" type="button" (click)="resetDiagram()">Reset</button>
-  <button class="button" type="button" (click)="exportDiagram()">Save</button>
+    <div class="properties-container" [class.collapsed]="propertiesCollapsed">
+      <div class="properties-header">
+        <span>Properties Panel</span>
+        <button class="toggle-button" (click)="toggleProperties()" [title]="propertiesCollapsed ? 'Expand Properties' : 'Collapse Properties'">
+          <span class="toggle-icon">{{ propertiesCollapsed ? '◀' : '▶' }}</span>
+        </button>
+      </div>
+      <div #propertiesRef class="properties-content" [class.hidden]="propertiesCollapsed"></div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="button-container" [class.hidden]="loading">
+    <button class="button secondary" type="button" (click)="resetDiagram()" [disabled]="deploying">
+      <span class="button-icon">🔄</span>
+      Reset
+    </button>
+    <button class="button primary" type="button" (click)="exportDiagram()" [disabled]="deploying">
+      <span class="button-icon">💾</span>
+      Save XML
+    </button>
+    <button class="button deploy" type="button" (click)="deployDiagram()" [disabled]="deploying">
+      <span class="button-icon" *ngIf="!deploying">🚀</span>
+      <span class="deploying-spinner" *ngIf="deploying"></span>
+      {{ deploying ? 'Deploying...' : 'Deploy to Server' }}
+    </button>
+    <button *ngIf="processId" class="button secondary" type="button" (click)="loadProcessDiagram(processId)" [disabled]="deploying">
+      <span class="button-icon">🔄</span>
+      Reload from Server
+    </button>
+  </div>
 </div>

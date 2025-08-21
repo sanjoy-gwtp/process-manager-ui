@@ -51,7 +51,10 @@ export class ProcessListComponent implements OnInit {
 
   viewDiagram(process: ProcessDefinition): void {
     this.router.navigate(['/diagram'], { 
-      queryParams: { processId: process.id } 
+      queryParams: { 
+        processId: process.id,
+        processName: process.name || process.key
+      } 
     });
   }
 

@@ -1,0 +1,27 @@
+<div class="deployment-dialog">
+  <h2 mat-dialog-title>{{ data.title }}</h2>
+  
+  <mat-dialog-content>
+    <p class="dialog-message">{{ data.message }}</p>
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Process Name</mat-label>
+      <input matInput 
+             [(ngModel)]="processName" 
+             placeholder="Enter process name"
+             (keyup.enter)="isValid() && onConfirm()"
+             #nameInput>
+      <mat-hint>This will be used as the deployment name</mat-hint>
+    </mat-form-field>
+  </mat-dialog-content>
+  
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-raised-button 
+            color="primary" 
+            [disabled]="!isValid()"
+            (click)="onConfirm()">
+      Deploy
+    </button>
+  </mat-dialog-actions>
+</div>

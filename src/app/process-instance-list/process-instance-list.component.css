@@ -1,0 +1,243 @@
+.container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header Card */
+.header-card {
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  color: white;
+  margin-bottom: 24px;
+}
+
+.header-card .mat-mdc-card-title,
+.header-card .mat-mdc-card-subtitle {
+  color: white;
+}
+
+.header-card .mat-mdc-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.5rem;
+}
+
+/* Loading and Error States */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+}
+
+.error-container {
+  padding: 20px 0;
+}
+
+.error-card {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f44336;
+  margin-bottom: 16px;
+}
+
+.error-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* Table Card */
+.table-card {
+  margin-top: 24px;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.table-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.instance-count {
+  font-weight: 500;
+  color: #757575;
+}
+
+.table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Table Cell Styling */
+.process-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.process-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.process-key {
+  color: #757575;
+  font-size: 0.75rem;
+}
+
+.instance-id {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.875rem;
+  background-color: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+}
+
+.time-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.start-time {
+  font-weight: 500;
+}
+
+.start-user {
+  color: #757575;
+  font-size: 0.75rem;
+}
+
+.status-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.status-icon {
+  font-size: 1rem !important;
+  width: 1rem !important;
+  height: 1rem !important;
+}
+
+.no-value {
+  color: #bdbdbd;
+  font-style: italic;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #757575;
+}
+
+.empty-state mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  color: #bdbdbd;
+}
+
+.empty-state h3 {
+  margin: 16px 0 8px;
+  color: #424242;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+/* Action Buttons */
+.mat-mdc-icon-button {
+  width: 36px;
+  height: 36px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .container {
+    padding: 16px;
+  }
+  
+  /* Hide less important columns on smaller screens */
+  .mat-column-businessKey,
+  .mat-column-activity {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+  }
+  
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  /* Hide even more columns on mobile */
+  .mat-column-version {
+    display: none;
+  }
+  
+  .process-info {
+    min-width: 120px;
+  }
+  
+  .instance-id {
+    font-size: 0.75rem;
+    padding: 2px 4px;
+  }
+  
+  .time-info {
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Show only essential columns on very small screens */
+  .mat-column-startTime {
+    display: none;
+  }
+  
+  .header-card .mat-mdc-card-title {
+    font-size: 1.25rem;
+  }
+  
+  .table-header {
+    padding: 12px 0;
+  }
+}
