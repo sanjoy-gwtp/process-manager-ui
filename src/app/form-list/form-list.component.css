@@ -1,0 +1,22 @@
+/* Import shared list page styles */
+@import '../shared/styles/list-page.css';
+
+/* Form-specific customizations */
+.form-name-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.form-name-container .list-cell-primary {
+  margin-bottom: 2px;
+}
+
+/* Form status specific styling */
+.form-row.deployed {
+  border-left: 3px solid #4caf50;
+}
+
+.form-row.draft {
+  border-left: 3px solid #ff9800;
+}

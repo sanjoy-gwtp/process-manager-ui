@@ -1,0 +1,186 @@
+<!-- Forms List Header -->
+<div class="list-container">
+  <mat-card class="list-header-card forms">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>dynamic_form</mat-icon>
+        Flowable Forms
+      </mat-card-title>
+      <mat-card-subtitle>
+        Manage and deploy forms for your processes
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-actions>
+      <button mat-raised-button (click)="createNewForm()" class="list-header-primary-btn">
+        <mat-icon>add</mat-icon>
+        Create New Form
+      </button>
+      <button mat-button (click)="refresh()" [disabled]="loading" class="list-header-secondary-btn">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="list-loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p class="list-loading-text">Loading forms...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error && !loading" class="list-error-container">
+    <mat-card class="list-error-card">
+      <div class="list-error-content">
+        <mat-icon color="warn">error</mat-icon>
+        <span>{{ error }}</span>
+      </div>
+      <div class="list-error-actions">
+        <button mat-button color="primary" (click)="refresh()">Try Again</button>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Forms Table -->
+  <div *ngIf="!loading && !error" class="list-table-container">
+    <mat-card class="list-table-card">
+      <div class="list-table-header">
+        <h3 class="list-table-title">Forms <span class="list-table-count">({{ forms.length }})</span></h3>
+        <div class="list-table-actions">
+          <mat-form-field appearance="outline" class="list-search-field">
+            <mat-label>Search forms...</mat-label>
+            <input matInput placeholder="Search by name or key">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="list-table-wrapper">
+        <table mat-table [dataSource]="forms" class="list-table" matSort>
+          
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+            <td mat-cell *matCellDef="let form">
+              <div class="form-name-container">
+                <div class="list-cell-primary">{{ form.name }}</div>
+                <div class="list-cell-meta">
+                  <mat-chip [color]="getStatusColor(form)" selected class="list-status-chip">
+                    <mat-icon matChipPrefix>{{ getStatusIcon(form) }}</mat-icon>
+                    {{ getStatusText(form) }}
+                  </mat-chip>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Key Column -->
+          <ng-container matColumnDef="key">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Form Key </th>
+            <td mat-cell *matCellDef="let form">
+              <div class="list-cell-meta">
+                <code class="list-code-text">{{ form.key }}</code>
+                <button mat-icon-button matTooltip="Copy form key" (click)="copyFormKey(form)" class="list-copy-button">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Version Column -->
+          <ng-container matColumnDef="version">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Version </th>
+            <td mat-cell *matCellDef="let form">
+              <mat-chip outlined>v{{ form.version }}</mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Description Column -->
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef> Description </th>
+            <td mat-cell *matCellDef="let form">
+              <div class="list-description-text">{{ form.description || 'No description' }}</div>
+            </td>
+          </ng-container>
+
+          <!-- Created Date Column -->
+          <ng-container matColumnDef="createdDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Created </th>
+            <td mat-cell *matCellDef="let form">
+              <div class="list-date-container">
+                <div class="list-date-primary">{{ formatDate(form.createdDate) }}</div>
+                <div class="list-date-secondary">by {{ form.createdBy }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Deployed Column -->
+          <ng-container matColumnDef="deployed">
+            <th mat-header-cell *matHeaderCellDef> Status </th>
+            <td mat-cell *matCellDef="let form">
+              <mat-icon [color]="form.deployed ? 'primary' : 'warn'" 
+                       [matTooltip]="form.deployed ? 'Form is deployed' : 'Form is not deployed'">
+                {{ form.deployed ? 'check_circle' : 'error' }}
+              </mat-icon>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef> Actions </th>
+            <td mat-cell *matCellDef="let form" class="list-actions-cell">
+              <button mat-icon-button [matMenuTriggerFor]="actionMenu" matTooltip="More actions" class="list-menu-button">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #actionMenu="matMenu">
+                <button mat-menu-item (click)="editForm(form)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Edit Form</span>
+                </button>
+                <button mat-menu-item (click)="viewForm(form)">
+                  <mat-icon>visibility</mat-icon>
+                  <span>View Form</span>
+                </button>
+                <button mat-menu-item (click)="duplicateForm(form)">
+                  <mat-icon>content_copy</mat-icon>
+                  <span>Duplicate Form</span>
+                </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="deleteForm(form)" class="list-menu-item-delete">
+                  <mat-icon color="warn">delete</mat-icon>
+                  <span>Delete Form</span>
+                </button>
+              </mat-menu>
+
+              <!-- Quick Action Buttons -->
+              <div class="list-quick-actions">
+                <button mat-icon-button color="primary" matTooltip="Edit Form" (click)="editForm(form)" class="list-action-button">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="View Form" (click)="viewForm(form)" class="list-action-button">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let form; columns: displayedColumns;" class="form-row"
+              [class.deployed]="form.deployed"></tr>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="forms.length === 0" class="list-empty-state">
+        <mat-icon>assignment_outlined</mat-icon>
+        <h3>No Forms Found</h3>
+        <p>Create your first form to get started with form management.</p>
+        <button mat-raised-button color="primary" (click)="createNewForm()">
+          <mat-icon>add</mat-icon>
+          Create New Form
+        </button>
+      </div>
+
+    </mat-card>
+  </div>
+</div>

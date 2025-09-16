@@ -2,6 +2,7 @@
 // The entry is a text input field with logic attached to create,
 // update and delete the "spell" property.
 import customProperties from './properties/custom-properties';
+import formProperties from './properties/form-properties';
 
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 
@@ -38,9 +39,14 @@ function CustomPropertiesProvider(propertiesPanel, translate) {
      */
     return function(groups) {
 
-      // Add the "magic" group
+      // Add the "custom" group for Start Events
       if(is(element, 'bpmn:StartEvent')) {
         groups.push(createCustomGroup(element, translate));
+      }
+
+      // Add the "form" group for User Tasks
+      if(is(element, 'bpmn:UserTask')) {
+        groups.push(createFormGroup(element, translate));
       }
 
       return groups;
@@ -69,6 +75,19 @@ function createCustomGroup(element, translate) {
   };
 
   return customGroup;
+}
+
+// Create the form mapping group for User Tasks
+function createFormGroup(element, translate) {
+
+  // create a group called "Form Mapping".
+  const formGroup = {
+    id: 'form',
+    label: translate('Form Mapping'),
+    entries: formProperties(element)
+  };
+
+  return formGroup;
 }
 
 

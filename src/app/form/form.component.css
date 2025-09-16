@@ -1,0 +1,602 @@
+.container {
+  padding: 16px;
+  height: calc(100vh - 64px); /* Account for toolbar */
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Header Section */
+.header-section {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #673ab7 0%, #512da8 100%);
+  color: white;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.form-title {
+  margin: 0 0 8px 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.form-info {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.mode-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mode-label {
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+.mode-value {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.form-id {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.875rem;
+}
+
+.task-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.task-id,
+.process-id,
+.form-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.info-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.status-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-badge.existing {
+  background-color: #4caf50;
+  color: white;
+}
+
+.status-badge.new {
+  background-color: #ff9800;
+  color: white;
+}
+
+.task-actions,
+.standalone-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.deploying-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 16px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #673ab7;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error State */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 16px;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f44336;
+  font-size: 1.125rem;
+}
+
+.error-icon {
+  font-size: 1.5rem;
+}
+
+.retry-button {
+  padding: 8px 16px;
+  background-color: #673ab7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.retry-button:hover {
+  background-color: #512da8;
+}
+
+/* Main Container */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 600px;
+  overflow: hidden;
+}
+
+.main-container.hidden {
+  display: none;
+}
+
+/* Mode Switcher */
+.mode-switcher {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+.mode-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 2px solid #673ab7;
+  background: white;
+  color: #673ab7;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.mode-button:hover {
+  background: #f3e5f5;
+}
+
+.mode-button.active {
+  background: #673ab7;
+  color: white;
+}
+
+.mode-icon {
+  font-size: 1rem;
+}
+
+
+/* Form Container Wrappers */
+.form-wrapper {
+  flex: 1;
+  min-height: 600px;
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  background: #ffffff;
+}
+
+.form-wrapper.hidden {
+  visibility: hidden;
+  position: absolute;
+  left: -9999px;
+}
+
+/* Form Editor Container */
+.form-editor-container {
+  height: 100%;
+  min-height: 600px;
+  width: 100%;
+  background: #ffffff;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Form Viewer Container */
+.form-viewer-container {
+  height: 100%;
+  width: 100%;
+  min-height: 600px;
+  background: #ffffff;
+  overflow-y: auto;
+  padding: 16px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+
+/* Form Editor Styling Overrides */
+.form-editor-container .fjs-container {
+  height: 100% !important;
+  font-family: 'Roboto', sans-serif !important;
+}
+
+/* Keep default styling for better compatibility */
+
+/* General form-js component visibility fixes */
+.fjs-container {
+  display: block !important;
+  visibility: visible !important;
+}
+
+.fjs-form {
+  display: block !important;
+  visibility: visible !important;
+}
+
+.fjs-form-field {
+  display: block !important;
+  visibility: visible !important;
+}
+
+/* Ensure form inputs are properly sized */
+.fjs-input,
+.fjs-textarea,
+.fjs-select,
+.fjs-checkbox {
+  display: block !important;
+  visibility: visible !important;
+}
+
+/* Form Viewer Styling Overrides */
+.form-viewer-container .fjs-container {
+  font-family: 'Roboto', sans-serif !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.form-viewer-container .fjs-form {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.form-viewer-container .fjs-form-field {
+  margin-bottom: 16px !important;
+  width: 100% !important;
+}
+
+.form-viewer-container .fjs-form-field-label {
+  font-weight: 500 !important;
+  color: #333 !important;
+  margin-bottom: 6px !important;
+  font-size: 0.875rem !important;
+}
+
+.form-viewer-container .fjs-input,
+.form-viewer-container .fjs-textarea,
+.form-viewer-container .fjs-select {
+  width: 100% !important;
+  padding: 8px 12px !important;
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+  font-size: 0.875rem !important;
+  background: #ffffff !important;
+  transition: border-color 0.2s ease !important;
+}
+
+.form-viewer-container .fjs-input:focus,
+.form-viewer-container .fjs-textarea:focus,
+.form-viewer-container .fjs-select:focus {
+  outline: none !important;
+  border-color: #673ab7 !important;
+  box-shadow: 0 0 0 2px rgba(103, 58, 183, 0.2) !important;
+}
+
+.form-viewer-container .fjs-checkbox {
+  accent-color: #673ab7 !important;
+}
+
+.form-viewer-container .fjs-button {
+  background-color: #673ab7 !important;
+  color: white !important;
+  padding: 8px 16px !important;
+  border: none !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.form-viewer-container .fjs-button:hover {
+  background-color: #512da8 !important;
+}
+
+
+/* Button Container */
+.button-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 0;
+  margin-top: 12px;
+  border-top: 1px solid #e0e0e0;
+  flex-shrink: 0;
+}
+
+.button-container.hidden {
+  display: none;
+}
+
+/* Buttons */
+.button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.button.primary {
+  background-color: #673ab7;
+  color: white;
+}
+
+.button.primary:hover {
+  background-color: #512da8;
+}
+
+.button.secondary {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.button.secondary:hover {
+  background-color: #e0e0e0;
+}
+
+.button.info {
+  background-color: #2196f3;
+  color: white;
+}
+
+.button.info:hover {
+  background-color: #1976d2;
+}
+
+.button.success {
+  background-color: #4caf50;
+  color: white;
+}
+
+.button.success:hover:not(:disabled) {
+  background-color: #45a049;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button-icon {
+  font-size: 1rem;
+}
+
+/* Help Section */
+.help-section {
+  margin-top: 16px;
+  flex-shrink: 0;
+}
+
+.help-details {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.help-summary {
+  background: #f8f9fa;
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: #333;
+  transition: background-color 0.2s ease;
+}
+
+.help-summary:hover {
+  background: #e9ecef;
+}
+
+.help-icon {
+  font-size: 1.25rem;
+}
+
+.help-content {
+  padding: 16px;
+  background: white;
+}
+
+.help-content h4 {
+  margin: 0 0 12px 0;
+  color: #673ab7;
+  font-size: 1rem;
+}
+
+.help-content ul {
+  margin: 0 0 16px 0;
+  padding-left: 24px;
+}
+
+.help-content li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.help-content strong {
+  color: #673ab7;
+}
+
+.help-content p {
+  margin: 16px 0 0 0;
+  padding: 12px;
+  background: #f3e5f5;
+  border-radius: 4px;
+  border-left: 4px solid #673ab7;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 8px;
+  }
+  
+  .header-section {
+    margin-bottom: 12px;
+    padding: 12px;
+  }
+  
+  .form-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .mode-switcher {
+    justify-content: center;
+  }
+  
+  .form-editor-container,
+  .form-viewer-container {
+    min-height: 400px;
+  }
+  
+  .button-container {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .help-summary {
+    padding: 12px;
+  }
+  
+  .help-content {
+    padding: 12px;
+  }
+}
+
+/* Small mobile screens */
+@media (max-width: 480px) {
+  .container {
+    padding: 4px;
+  }
+  
+  .mode-switcher {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .mode-button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .form-editor-container,
+  .form-viewer-container {
+    min-height: 350px;
+  }
+}
+
+/* Form Editor Responsive Styles */
+@media (max-width: 1024px) {
+  .form-editor-container .fjs-palette {
+    width: 200px !important;
+  }
+  
+  .form-editor-container .fjs-properties-panel {
+    width: 250px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .form-editor-container .fjs-palette {
+    width: 180px !important;
+  }
+  
+  .form-editor-container .fjs-properties-panel {
+    width: 220px !important;
+  }
+}

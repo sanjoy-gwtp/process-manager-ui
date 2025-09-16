@@ -319,6 +319,15 @@
   background-color: #45a049;
 }
 
+.button.task-form {
+  background: linear-gradient(135deg, #7b1fa2 0%, #6a1b9a 100%);
+  color: white;
+}
+
+.button.task-form:hover:not(:disabled) {
+  background: linear-gradient(135deg, #8e24aa 0%, #7b1fa2 100%);
+}
+
 .button:disabled {
   opacity: 0.6;
   cursor: not-allowed;

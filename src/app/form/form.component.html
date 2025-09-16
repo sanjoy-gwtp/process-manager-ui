@@ -1,0 +1,224 @@
+<div class="container">
+  <!-- Header -->
+  <div class="header-section">
+    <h2 class="form-title">
+      <span *ngIf="formName">{{ formName }}</span>
+      <span *ngIf="!formName">Form Designer</span>
+    </h2>
+    <div class="form-info">
+      <div class="mode-indicator">
+        <span class="mode-label">Mode:</span>
+        <span class="mode-value">{{ currentMode | titlecase }}</span>
+      </div>
+      
+      <!-- Task Information (when editing task form) -->
+      <div *ngIf="taskId" class="task-info">
+        <div class="task-id">
+          <span class="info-label">Task:</span>
+          <code>{{ taskId }}</code>
+        </div>
+        <div *ngIf="processInstanceId" class="process-id">
+          <span class="info-label">Process:</span>
+          <code>{{ processName || processInstanceId }}</code>
+        </div>
+        <div class="form-status">
+          <span class="info-label">Status:</span>
+          <span class="status-badge" [class.existing]="formExists" [class.new]="!formExists">
+            {{ formExists ? 'Existing Form' : 'New Form' }}
+          </span>
+        </div>
+      </div>
+      
+      <!-- Form ID (standalone forms) -->
+      <div *ngIf="formId && !taskId" class="form-id">
+        <code>{{ formId }}</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading form {{ currentMode }}...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <div class="error-message">
+      <span class="error-icon">⚠️</span>
+      {{ error }}
+    </div>
+    <button class="retry-button" type="button" (click)="initializeForm()">
+      Retry
+    </button>
+  </div>
+
+  <!-- Main Form Container -->
+  <div class="main-container" [class.hidden]="loading">
+    <!-- Mode Switcher -->
+    <div class="mode-switcher">
+      <button 
+        class="mode-button" 
+        [class.active]="currentMode === 'editor'"
+        (click)="switchMode('editor')">
+        <span class="mode-icon">✏️</span>
+        Form Editor
+      </button>
+      <button 
+        class="mode-button" 
+        [class.active]="currentMode === 'viewer'"
+        (click)="switchMode('viewer')">
+        <span class="mode-icon">👁️</span>
+        Form Preview
+      </button>
+    </div>
+
+    <!-- Form Editor Container -->
+    <div class="form-wrapper editor-wrapper" 
+         [class.hidden]="loading || currentMode !== 'editor'">
+      <div #formEditorRef class="form-editor-container"></div>
+    </div>
+
+    <!-- Form Viewer Container -->
+    <div class="form-wrapper viewer-wrapper" 
+         [class.hidden]="loading || currentMode !== 'viewer'">
+      <div #formViewerRef class="form-viewer-container"></div>
+    </div>
+
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="button-container" [class.hidden]="loading">
+    <!-- Task-based form actions (when taskId is present) -->
+    <div *ngIf="taskId" class="task-actions">
+      <button 
+        class="button deploy" 
+        type="button" 
+        (click)="deployFormToServer()"
+        [disabled]="isDeploying">
+        <span class="button-icon" *ngIf="!isDeploying">🚀</span>
+        <span class="deploying-spinner" *ngIf="isDeploying"></span>
+        {{ isDeploying ? 'Deploying...' : (formExists ? 'Update Form' : 'Deploy Form') }}
+      </button>
+      
+      <button 
+        class="button secondary" 
+        type="button" 
+        (click)="saveFormDraft()"
+        [disabled]="isDeploying">
+        <span class="button-icon">💾</span>
+        Save Draft
+      </button>
+      
+      <button 
+        class="button secondary" 
+        type="button" 
+        (click)="cancelFormEditing()"
+        [disabled]="isDeploying">
+        <span class="button-icon">❌</span>
+        Cancel
+      </button>
+      
+      <button 
+        class="button info" 
+        type="button" 
+        (click)="navigateBackToDiagram()"
+        [disabled]="isDeploying">
+        <span class="button-icon">📊</span>
+        Back to Diagram
+      </button>
+      
+      <button 
+        class="button secondary" 
+        type="button" 
+        (click)="showAvailableForms()"
+        [disabled]="isDeploying"
+        title="Show all forms on server">
+        <span class="button-icon">📋</span>
+        List Forms
+      </button>
+    </div>
+
+    <!-- Standalone form actions (when no taskId) -->
+    <div *ngIf="!taskId" class="standalone-actions">
+      <button class="button secondary" type="button" (click)="resetForm()">
+        <span class="button-icon">🔄</span>
+        New Form
+      </button>
+      
+      <button class="button primary" type="button" (click)="importForm()">
+        <span class="button-icon">📁</span>
+        Import JSON
+      </button>
+      
+      <button class="button primary" type="button" (click)="exportForm()">
+        <span class="button-icon">💾</span>
+        Export JSON
+      </button>
+      
+      <button class="button info" type="button" (click)="previewData()">
+        <span class="button-icon">👁️</span>
+        Preview Schema
+      </button>
+      
+      <button 
+        class="button success" 
+        type="button" 
+        (click)="submitForm()"
+        [disabled]="currentMode === 'editor'">
+        <span class="button-icon">✅</span>
+        Submit Form
+      </button>
+    </div>
+  </div>
+
+  <!-- Help Section -->
+  <!-- <div class="help-section" *ngIf="!loading">
+    <details class="help-details">
+      <summary class="help-summary">
+        <span class="help-icon">💡</span>
+        Form Builder Help
+      </summary>
+      <div class="help-content">
+        <h4>How to use the Form Builder:</h4>
+        <ul>
+          <li><strong>Form Editor Mode:</strong> Drag and drop form fields from the palette, configure properties, and design your form layout</li>
+          <li><strong>Form Preview Mode:</strong> Test your form by filling it out as an end user would see it</li>
+          <li><strong>Playground Mode:</strong> Simulate form with input/output data, test form behavior with pre-filled sample data</li>
+          <li><strong>Import/Export:</strong> Save your form designs as JSON files or load existing form configurations</li>
+          <li><strong>Preview Schema:</strong> View the current form JSON schema in the browser console</li>
+        </ul>
+        
+        <h4>Mode Details:</h4>
+        <ul>
+          <li><strong>Editor:</strong> Visual form builder with drag & drop palette and properties panel</li>
+          <li><strong>Preview:</strong> Test forms as end users see them, with empty initial data</li>
+          <li><strong>Playground:</strong> Simulate forms with sample input data to test form behavior and validation</li>
+        </ul>
+
+        <h4>Editor Features:</h4>
+        <ul>
+          <li>Drag & drop form fields from the palette</li>
+          <li>Configure field properties (labels, validation, options)</li>
+          <li>Rearrange form elements</li>
+          <li>Real-time form preview</li>
+          <li>Professional form layouts</li>
+        </ul>
+
+        <h4>Available Form Fields:</h4>
+        <ul>
+          <li>Text Input - Single line text fields</li>
+          <li>Textarea - Multi-line text input</li>
+          <li>Number - Numeric input fields</li>
+          <li>Select - Dropdown selection</li>
+          <li>Radio - Single choice from options</li>
+          <li>Checklist - Multiple choice selections</li>
+          <li>Checkbox - Single checkbox for agreements</li>
+          <li>Button - Action buttons</li>
+        </ul>
+
+        <p><strong>Tip:</strong> Use Editor to design, Preview to test empty forms, and Playground to simulate with data!</p>
+      </div>
+    </details>
+  </div> -->
+</div>

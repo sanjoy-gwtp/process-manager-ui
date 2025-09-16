@@ -1,0 +1,551 @@
+/* ========================================
+   SHARED LIST PAGE STYLES
+   Consistent design system for all list components
+   ======================================== */
+
+/* Container and Layout */
+.list-container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header Card - Consistent gradient backgrounds */
+.list-header-card {
+  color: white;
+  margin-bottom: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.list-header-card.processes {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.list-header-card.instances {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.list-header-card.tasks {
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+}
+
+.list-header-card.forms {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.list-header-card .mat-mdc-card-title,
+.list-header-card .mat-mdc-card-subtitle {
+  color: white;
+}
+
+.list-header-card .mat-mdc-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.list-header-card .mat-mdc-card-subtitle {
+  opacity: 0.9;
+  font-size: 1rem;
+}
+
+.list-header-card .mat-mdc-card-actions {
+  padding-top: 16px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Header Action Buttons */
+.list-header-primary-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.list-header-primary-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.list-header-secondary-btn {
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+.list-header-secondary-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Loading States */
+.list-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 20px;
+}
+
+.list-loading-text {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Error States */
+.list-error-container {
+  padding: 20px 0;
+}
+
+.list-error-card {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #ffebee;
+  border-left: 4px solid #f44336;
+  border-radius: 8px;
+}
+
+.list-error-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+}
+
+.list-error-content mat-icon {
+  color: #f44336;
+}
+
+.list-error-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* Table Container */
+.list-table-container {
+  margin-top: 24px;
+}
+
+.list-table-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Table Header */
+.list-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.list-table-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #333;
+  margin: 0;
+}
+
+.list-table-count {
+  color: #666;
+  font-weight: normal;
+  font-size: 1rem;
+}
+
+.list-table-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.list-search-field {
+  min-width: 250px;
+}
+
+.list-search-field .mat-mdc-form-field-wrapper {
+  background-color: white;
+  border-radius: 8px;
+}
+
+/* Table Wrapper */
+.list-table-wrapper {
+  overflow-x: auto;
+  background: white;
+}
+
+.list-table {
+  width: 100%;
+  background: white;
+}
+
+/* Table Headers */
+.list-table .mat-mdc-header-cell {
+  background-color: #f5f5f5;
+  color: #333;
+  font-weight: 600;
+  padding: 16px 12px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+/* Table Cells */
+.list-table .mat-mdc-cell {
+  padding: 16px 12px;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
+}
+
+/* Table Rows */
+.list-table .mat-mdc-row {
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.list-table .mat-mdc-row:hover {
+  background-color: #f8f9fa;
+}
+
+.list-table .mat-mdc-row.highlighted {
+  background-color: #e3f2fd;
+  border-left: 4px solid #2196f3;
+}
+
+/* Common Cell Content Styles */
+.list-cell-primary {
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.list-cell-secondary {
+  color: #666;
+  font-size: 12px;
+}
+
+.list-cell-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.list-code-text {
+  font-family: 'Roboto Mono', monospace;
+  background-color: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #666;
+  border: 1px solid #e0e0e0;
+}
+
+.list-description-text {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #666;
+  font-size: 13px;
+}
+
+/* Date and Time Formatting */
+.list-date-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.list-date-primary {
+  font-size: 13px;
+  color: #333;
+  font-weight: 500;
+}
+
+.list-date-secondary {
+  font-size: 11px;
+  color: #888;
+  margin-top: 2px;
+}
+
+/* Status and Chip Styles */
+.list-status-chip {
+  font-size: 11px;
+  height: 24px;
+  font-weight: 500;
+  border-radius: 12px;
+}
+
+.list-status-chip.success {
+  background-color: #4caf50;
+  color: white;
+}
+
+.list-status-chip.warning {
+  background-color: #ff9800;
+  color: white;
+}
+
+.list-status-chip.error {
+  background-color: #f44336;
+  color: white;
+}
+
+.list-status-chip.info {
+  background-color: #2196f3;
+  color: white;
+}
+
+.list-status-chip.neutral {
+  background-color: #9e9e9e;
+  color: white;
+}
+
+/* Action Buttons */
+.list-actions-cell {
+  min-width: 120px;
+  text-align: right;
+}
+
+.list-quick-actions {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.list-action-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+}
+
+.list-menu-button {
+  color: #666;
+}
+
+/* Menu Items */
+.list-menu-item-delete {
+  color: #f44336;
+}
+
+.list-menu-item-delete mat-icon {
+  color: #f44336;
+}
+
+/* Empty State */
+.list-empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #666;
+}
+
+.list-empty-state mat-icon {
+  font-size: 72px;
+  width: 72px;
+  height: 72px;
+  color: #ccc;
+  margin-bottom: 20px;
+}
+
+.list-empty-state h3 {
+  margin: 20px 0 12px;
+  color: #555;
+  font-weight: 500;
+  font-size: 1.25rem;
+}
+
+.list-empty-state p {
+  margin-bottom: 32px;
+  color: #777;
+  font-size: 1rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.list-empty-state button {
+  padding: 12px 24px;
+  border-radius: 8px;
+}
+
+/* Copy to Clipboard Button */
+.list-copy-button {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  padding: 4px;
+  min-width: auto;
+  width: 28px;
+  height: 28px;
+}
+
+.list-copy-button:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .list-container {
+    padding: 16px;
+  }
+  
+  .list-table-header {
+    padding: 16px 20px;
+  }
+  
+  .list-search-field {
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .list-container {
+    padding: 12px;
+  }
+  
+  .list-header-card .mat-mdc-card-title {
+    font-size: 1.25rem;
+  }
+  
+  .list-header-card .mat-mdc-card-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .list-header-primary-btn,
+  .list-header-secondary-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .list-table-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 16px;
+  }
+  
+  .list-search-field {
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .list-table .mat-mdc-cell,
+  .list-table .mat-mdc-header-cell {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+  
+  .list-quick-actions {
+    display: none;
+  }
+  
+  .list-description-text {
+    max-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .list-container {
+    padding: 8px;
+  }
+  
+  .list-header-card .mat-mdc-card-title {
+    font-size: 1.125rem;
+    gap: 8px;
+  }
+  
+  .list-table-title {
+    font-size: 1.125rem;
+  }
+  
+  .list-table .mat-mdc-cell,
+  .list-table .mat-mdc-header-cell {
+    padding: 6px 4px;
+    font-size: 11px;
+  }
+  
+  .list-empty-state {
+    padding: 40px 16px;
+  }
+  
+  .list-empty-state mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+  }
+  
+  .list-empty-state h3 {
+    font-size: 1.125rem;
+  }
+  
+  .list-empty-state p {
+    font-size: 0.875rem;
+  }
+}
+
+/* Animation and Transitions */
+.list-fade-in {
+  animation: listFadeIn 0.3s ease-out;
+}
+
+.list-slide-in {
+  animation: listSlideIn 0.4s ease-out;
+}
+
+@keyframes listFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes listSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Accessibility */
+.list-table .mat-mdc-row:focus {
+  outline: 2px solid #2196f3;
+  outline-offset: -2px;
+}
+
+.list-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

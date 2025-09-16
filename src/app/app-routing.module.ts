@@ -3,10 +3,12 @@ import { RouterModule, Routes } from '@angular/router';
 import { ProcessListComponent } from './process-list/process-list.component';
 import { ProcessDetailComponent } from './process-detail/process-detail.component';
 import { DiagramComponent } from './diagram/diagram.component';
+import { FormComponent } from './form/form.component';
 import { ProcessInstanceListComponent } from './process-instance-list/process-instance-list.component';
 import { ProcessInstanceDetailComponent } from './process-instance-detail/process-instance-detail.component';
 import { TaskListComponent } from './task-list/task-list.component';
 import { TaskDetailComponent } from './task-detail/task-detail.component';
+import { FormListComponent } from './form-list/form-list.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/processes', pathMatch: 'full' },
@@ -16,7 +18,9 @@ const routes: Routes = [
   { path: 'instances/:id', component: ProcessInstanceDetailComponent },
   { path: 'tasks', component: TaskListComponent },
   { path: 'tasks/:id', component: TaskDetailComponent },
-  { path: 'diagram', component: DiagramComponent }
+  { path: 'forms', component: FormListComponent },
+  { path: 'diagram', component: DiagramComponent },
+  { path: 'form', component: FormComponent }
 ];
 
 @NgModule({

@@ -22,6 +22,19 @@ This is an Angular application that integrates BPMN.js for creating and editing 
   - Integrates `BpmnPropertiesPanelModule` for properties editing
   - Supports custom properties through custom providers
   - Includes diagram export functionality to XML format
+  - **Dynamic XML Loading**: Loads process definition XML from API via query parameters
+  - **URL Format**: `/diagram?processId={id}&processName={name}`
+  - **API Integration**: Fetches XML from `GET /api/process-definitions/{id}/xml`
+  - **Loading States**: Professional spinner and error handling
+  - **Fallback**: Loads default diagram if API fails
+  - **Space Optimization**: Enhanced layout with better space utilization
+  - **Collapsible Properties**: Toggle properties panel to maximize diagram space
+  - **Responsive Design**: Adaptive layout for desktop, tablet, and mobile screens
+  - **Property Panel Sizing**: Dynamic sizing (320px-500px based on screen size)
+  - **Deployment Functionality**: Deploy diagrams to server via multipart form upload
+  - **API Integration**: Uses `POST /api/process-definitions/deploy?name={processName}`
+  - **User Feedback**: Success/error notifications with Material Design snackbars
+  - **Dialog Interface**: Material Design modal for deployment name input
 
 ### BPMN Integration Architecture
 
@@ -84,6 +97,11 @@ The application uses Angular Material for UI components:
   - Accessible via `/processes/:id` route
   - Displays comprehensive process information including identifiers, capabilities, and metadata
   - Action buttons for starting processes and viewing diagrams
+  - **Suspend/Activate Functionality**: Toggle process definition active state
+  - **API Integration**: Uses `PUT /api/process-definitions/{id}/suspend` and `/activate`
+  - **Confirmation Dialogs**: Native confirmation for suspend/activate actions
+  - **Visual Status Indicators**: Enhanced status display with icons and color coding
+  - **Loading States**: Professional feedback during suspend/activate operations
   - Material Design cards layout with proper navigation
   - Back button to return to process list
 

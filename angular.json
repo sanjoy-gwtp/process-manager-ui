@@ -34,6 +34,8 @@
             "styles": [
               "node_modules/bpmn-js/dist/assets/diagram-js.css",
               "node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn.css",
+              "node_modules/@bpmn-io/form-js/dist/assets/form-js.css",
+              "node_modules/@bpmn-io/form-js-editor/dist/assets/form-js-editor.css",
               "node_modules/bootstrap/dist/css/bootstrap.css",
               "src/styles.css"
             ],

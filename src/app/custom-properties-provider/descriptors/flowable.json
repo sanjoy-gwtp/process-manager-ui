@@ -1,0 +1,33 @@
+{
+  "name": "Flowable",
+  "prefix": "flowable",
+  "uri": "http://flowable.org/bpmn",
+  "xml": {
+    "tagAlias": "lowerCase"
+  },
+  "associations": [],
+  "types": [],
+  "enumerations": [],
+  "properties": [
+    {
+      "name": "formKey",
+      "isAttr": true,
+      "type": "String"
+    },
+    {
+      "name": "formRef",
+      "isAttr": true,
+      "type": "String"
+    },
+    {
+      "name": "formType",
+      "isAttr": true,
+      "type": "String"
+    },
+    {
+      "name": "assignee",
+      "isAttr": true,
+      "type": "String"
+    }
+  ]
+}
