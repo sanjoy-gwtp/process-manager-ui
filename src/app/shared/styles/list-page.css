@@ -5,13 +5,13 @@
 
 /* Container and Layout */
 .list-container {
-  padding: 20px;
+  /* padding: 20px; */
   max-width: 1400px;
   margin: 0 auto;
 }
 
 /* Header Card - Consistent gradient backgrounds */
-.list-header-card {
+/* .list-header-card {
   color: white;
   margin-bottom: 24px;
   border-radius: 12px;
@@ -32,7 +32,7 @@
 
 .list-header-card.forms {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
+} */
 
 .list-header-card .mat-mdc-card-title,
 .list-header-card .mat-mdc-card-subtitle {

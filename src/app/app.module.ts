@@ -14,6 +14,7 @@ import { TaskListComponent } from './task-list/task-list.component';
 import { TaskDetailComponent } from './task-detail/task-detail.component';
 import { FormListComponent } from './form-list/form-list.component';
 import { DeploymentDialogComponent } from './deployment-dialog/deployment-dialog.component';
+import { NavigationComponent } from './navigation/navigation.component';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 // Material Design Modules
@@ -32,6 +33,9 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { LayoutModule } from '@angular/cdk/layout';
 import { FormsModule } from '@angular/forms';
 
 @NgModule({ declarations: [
@@ -45,7 +49,8 @@ import { FormsModule } from '@angular/forms';
         TaskListComponent,
         TaskDetailComponent,
         FormListComponent,
-        DeploymentDialogComponent
+        DeploymentDialogComponent,
+        NavigationComponent
     ],
     bootstrap: [AppComponent], 
     imports: [
@@ -67,7 +72,10 @@ import { FormsModule } from '@angular/forms';
         MatDialogModule,
         MatFormFieldModule,
         MatInputModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MatSidenavModule,
+        MatListModule,
+        LayoutModule
     ], 
     providers: [provideHttpClient(withInterceptorsFromDi())] 
 })

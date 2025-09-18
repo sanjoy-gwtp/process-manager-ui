@@ -1,41 +1,71 @@
 <div class="container">
   <!-- Header -->
-  <div class="header-section">
-    <h2 class="form-title">
+  <!-- <div class="header-section">
+    <h3 class="form-title">
+      
+    </h3>
+    <div class="form-info">
+      
+    </div>
+      
+  </div> -->
+
+ <div class="header-content">
+    <mat-card-header>
+      <mat-card-title>
       <span *ngIf="formName">{{ formName }}</span>
       <span *ngIf="!formName">Form Designer</span>
-    </h2>
-    <div class="form-info">
+      </mat-card-title>
+
       <div class="mode-indicator">
-        <span class="mode-label">Mode:</span>
-        <span class="mode-value">{{ currentMode | titlecase }}</span>
+        <span >Mode:</span>
+        <span >{{ currentMode | titlecase }}</span>
       </div>
-      
-      <!-- Task Information (when editing task form) -->
-      <div *ngIf="taskId" class="task-info">
+
+        <div *ngIf="taskId" >
         <div class="task-id">
-          <span class="info-label">Task:</span>
+          <span>Task:</span>
           <code>{{ taskId }}</code>
         </div>
+        </div>
         <div *ngIf="processInstanceId" class="process-id">
-          <span class="info-label">Process:</span>
+          <span >Process:</span>
           <code>{{ processName || processInstanceId }}</code>
         </div>
         <div class="form-status">
-          <span class="info-label">Status:</span>
-          <span class="status-badge" [class.existing]="formExists" [class.new]="!formExists">
+          <span>Status:</span>
+          <span [class.existing]="formExists" [class.new]="!formExists">
             {{ formExists ? 'Existing Form' : 'New Form' }}
           </span>
         </div>
-      </div>
-      
-      <!-- Form ID (standalone forms) -->
-      <div *ngIf="formId && !taskId" class="form-id">
+        <div *ngIf="formId && !taskId" class="form-id">
         <code>{{ formId }}</code>
       </div>
-    </div>
-  </div>
+    </mat-card-header>
 
+    
+      
+     
+
+      
+      <!-- Form ID (standalone forms) -->
+
+
+    <div class="spacer"></div>
+    
+    <div class="action-buttons">
+        <button mat-raised-button
+        [class.active]="currentMode === 'editor'"
+        (click)="switchMode('editor')">
+        Form Editor
+      </button>
+      <button mat-raised-button
+        [class.active]="currentMode === 'viewer'"
+        (click)="switchMode('viewer')">
+        Form Preview
+      </button>
+    </div>
+   </div>
   <!-- Loading State -->
   <div *ngIf="loading" class="loading-container">
     <div class="spinner"></div>
@@ -56,35 +86,16 @@
   <!-- Main Form Container -->
   <div class="main-container" [class.hidden]="loading">
     <!-- Mode Switcher -->
-    <div class="mode-switcher">
-      <button 
-        class="mode-button" 
-        [class.active]="currentMode === 'editor'"
-        (click)="switchMode('editor')">
-        <span class="mode-icon">✏️</span>
-        Form Editor
-      </button>
-      <button 
-        class="mode-button" 
-        [class.active]="currentMode === 'viewer'"
-        (click)="switchMode('viewer')">
-        <span class="mode-icon">👁️</span>
-        Form Preview
-      </button>
-    </div>
-
     <!-- Form Editor Container -->
     <div class="form-wrapper editor-wrapper" 
          [class.hidden]="loading || currentMode !== 'editor'">
       <div #formEditorRef class="form-editor-container"></div>
     </div>
-
     <!-- Form Viewer Container -->
     <div class="form-wrapper viewer-wrapper" 
          [class.hidden]="loading || currentMode !== 'viewer'">
       <div #formViewerRef class="form-viewer-container"></div>
     </div>
-
   </div>
 
   <!-- Action Buttons -->
@@ -92,8 +103,7 @@
     <!-- Task-based form actions (when taskId is present) -->
     <div *ngIf="taskId" class="task-actions">
       <button 
-        class="button deploy" 
-        type="button" 
+        mat-raised-button
         (click)="deployFormToServer()"
         [disabled]="isDeploying">
         <span class="button-icon" *ngIf="!isDeploying">🚀</span>
@@ -102,8 +112,7 @@
       </button>
       
       <button 
-        class="button secondary" 
-        type="button" 
+        mat-raised-button
         (click)="saveFormDraft()"
         [disabled]="isDeploying">
         <span class="button-icon">💾</span>
@@ -111,8 +120,7 @@
       </button>
       
       <button 
-        class="button secondary" 
-        type="button" 
+        mat-raised-button
         (click)="cancelFormEditing()"
         [disabled]="isDeploying">
         <span class="button-icon">❌</span>
@@ -120,8 +128,7 @@
       </button>
       
       <button 
-        class="button info" 
-        type="button" 
+        mat-raised-button
         (click)="navigateBackToDiagram()"
         [disabled]="isDeploying">
         <span class="button-icon">📊</span>
@@ -129,8 +136,7 @@
       </button>
       
       <button 
-        class="button secondary" 
-        type="button" 
+        mat-raised-button
         (click)="showAvailableForms()"
         [disabled]="isDeploying"
         title="Show all forms on server">
@@ -141,29 +147,28 @@
 
     <!-- Standalone form actions (when no taskId) -->
     <div *ngIf="!taskId" class="standalone-actions">
-      <button class="button secondary" type="button" (click)="resetForm()">
+      <button mat-raised-button (click)="resetForm()">
         <span class="button-icon">🔄</span>
         New Form
       </button>
       
-      <button class="button primary" type="button" (click)="importForm()">
+      <button mat-raised-button (click)="importForm()">
         <span class="button-icon">📁</span>
         Import JSON
       </button>
       
-      <button class="button primary" type="button" (click)="exportForm()">
+      <button mat-raised-button (click)="exportForm()">
         <span class="button-icon">💾</span>
         Export JSON
       </button>
       
-      <button class="button info" type="button" (click)="previewData()">
+      <button mat-raised-button (click)="previewData()">
         <span class="button-icon">👁️</span>
         Preview Schema
       </button>
       
       <button 
-        class="button success" 
-        type="button" 
+        mat-raised-button 
         (click)="submitForm()"
         [disabled]="currentMode === 'editor'">
         <span class="button-icon">✅</span>

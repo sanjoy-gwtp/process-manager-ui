@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatTableDataSource } from '@angular/material/table';
 import { ProcessDefinition } from '../models/process-definition.model';
 import { ProcessDefinitionService } from '../services/process-definition.service';
 
@@ -11,6 +12,7 @@ import { ProcessDefinitionService } from '../services/process-definition.service
 })
 export class ProcessListComponent implements OnInit {
   processDefinitions: ProcessDefinition[] = [];
+  dataSource = new MatTableDataSource<ProcessDefinition>([]);
   loading = false;
   error: string | null = null;
   displayedColumns: string[] = ['name', 'key', 'version', 'category', 'resource', 'status', 'hasForm', 'hasDiagram', 'actions'];
@@ -31,6 +33,7 @@ export class ProcessListComponent implements OnInit {
     this.processDefinitionService.getProcessDefinitions().subscribe({
       next: (data) => {
         this.processDefinitions = data;
+        this.dataSource.data = data;
         this.loading = false;
       },
       error: (err) => {
@@ -61,5 +64,18 @@ export class ProcessListComponent implements OnInit {
   startProcess(process: ProcessDefinition): void {
     console.log('Starting process:', process.key);
     // TODO: Implement start process functionality
+  }
+
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  getActiveCount(): number {
+    return this.processDefinitions.filter(p => !p.suspended).length;
+  }
+
+  getSuspendedCount(): number {
+    return this.processDefinitions.filter(p => p.suspended).length;
   }
 }

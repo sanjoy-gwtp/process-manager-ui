@@ -1,16 +1,17 @@
 <div class="container">
   <!-- Header -->
-  <mat-card class="header-card">
+   <div class="header-content">
     <mat-card-header>
       <mat-card-title>
-        <mat-icon>assignment</mat-icon>
-        Process Tasks
+       Process Tasks
       </mat-card-title>
-      <mat-card-subtitle>
-        Manage and track active process tasks
-      </mat-card-subtitle>
     </mat-card-header>
-  </mat-card>
+
+    <div class="spacer"></div>
+    <button mat-raised-button color="primary" (click)="loadTasks()">
+        Refresh
+      </button>
+   </div>
 
   <!-- Loading State -->
   <div *ngIf="loading" class="loading-container">
@@ -42,11 +43,6 @@
       <div class="table-header">
         <div class="table-info">
           <span class="task-count">{{ tasks.length }} task(s)</span>
-        </div>
-        <div class="table-actions">
-          <button mat-icon-button matTooltip="Refresh" (click)="loadTasks()">
-            <mat-icon>refresh</mat-icon>
-          </button>
         </div>
       </div>
 

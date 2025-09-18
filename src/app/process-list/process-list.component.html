@@ -1,33 +1,94 @@
 <div class="container">
-  <mat-card class="process-list-card">
+ <div class="header-content">
     <mat-card-header>
-      <mat-card-title>Process Definitions</mat-card-title>
-      <div class="spacer"></div>
+      <mat-card-title>
+       Process Definitions
+      </mat-card-title>
+    </mat-card-header>
+
+    <div class="spacer"></div>
+    
+    <div class="action-buttons">
       <button mat-raised-button color="primary" (click)="refresh()" [disabled]="loading">
-        <mat-icon *ngIf="loading">refresh</mat-icon>
+        <mat-icon *ngIf="loading" class="spinning">refresh</mat-icon>
         <mat-icon *ngIf="!loading">refresh</mat-icon>
         Refresh
       </button>
-    </mat-card-header>
+      <button mat-raised-button color="accent">
+        <mat-icon>add</mat-icon>
+        Deploy New
+      </button>
+    </div>
+   </div>
+
+
+
+  <!-- Content Card -->
+  <mat-card class="content-card">
 
     <mat-card-content>
-      <div *ngIf="error" class="error-message">
-        <mat-icon color="warn">error</mat-icon>
-        {{ error }}
-      </div>
+      <!-- Error State -->
+      <mat-card *ngIf="error" class="state-card error-card">
+        <mat-card-content>
+          <div class="state-content">
+            <mat-icon color="warn" class="state-icon">error_outline</mat-icon>
+            <h3>Error Loading Process Definitions</h3>
+            <p>{{ error }}</p>
+            <button mat-raised-button color="primary" (click)="refresh()">
+              <mat-icon>refresh</mat-icon>
+              Try Again
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
 
-      <div *ngIf="loading && processDefinitions.length === 0" class="loading-container">
-        <mat-spinner diameter="50"></mat-spinner>
-        <p>Loading process definitions...</p>
-      </div>
+      <!-- Loading State -->
+      <mat-card *ngIf="loading && processDefinitions.length === 0" class="state-card loading-card">
+        <mat-card-content>
+          <div class="state-content">
+            <mat-spinner diameter="50"></mat-spinner>
+            <h3>Loading Process Definitions</h3>
+            <p>Please wait while we fetch your process definitions...</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
 
-      <div *ngIf="!loading && processDefinitions.length === 0 && !error" class="no-data-message">
-        <mat-icon>info</mat-icon>
-        No process definitions found.
-      </div>
+      <!-- Empty State -->
+      <mat-card *ngIf="!loading && processDefinitions.length === 0 && !error" class="state-card empty-card">
+        <mat-card-content>
+          <div class="state-content">
+            <mat-icon class="state-icon">folder_open</mat-icon>
+            <h3>No Process Definitions Found</h3>
+            <p>You haven't deployed any process definitions yet. Deploy your first process to get started.</p>
+            <button mat-raised-button color="primary">
+              <mat-icon>upload</mat-icon>
+              Deploy Process
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
 
-      <div *ngIf="processDefinitions.length > 0" class="table-container">
-        <table mat-table [dataSource]="processDefinitions" class="process-table">
+      <!-- Data Table -->
+      <div *ngIf="processDefinitions.length > 0" class="data-section">
+        <!-- Filters and Search -->
+        <div class="table-toolbar">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Search processes</mat-label>
+            <input matInput placeholder="Search by name or key..." (keyup)="applyFilter($event)">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+
+          <div class="toolbar-actions">
+            <mat-chip-listbox class="filter-chips">
+              <mat-chip-option selected>All ({{ processDefinitions.length }})</mat-chip-option>
+              <mat-chip-option>Active</mat-chip-option>
+              <mat-chip-option>Suspended</mat-chip-option>
+            </mat-chip-listbox>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table mat-table [dataSource]="dataSource" class="process-table" matSort>
           <!-- Name Column -->
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>Name</th>
@@ -130,14 +191,21 @@
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="process-row"></tr>
         </table>
-      </div>
+        </div>
 
-      <div *ngIf="processDefinitions.length > 0" class="table-footer">
-        <span class="result-count">
-          Showing {{ processDefinitions.length }} process definition(s)
-        </span>
+        <!-- Table Statistics -->
+        <div class="table-stats">
+          <div class="stats-info">
+            <mat-icon>analytics</mat-icon>
+            <span>Showing {{ processDefinitions.length }} process definition(s)</span>
+          </div>
+          <div class="stats-summary">
+            <mat-chip color="primary">{{ getActiveCount() }} Active</mat-chip>
+            <mat-chip color="warn">{{ getSuspendedCount() }} Suspended</mat-chip>
+          </div>
+        </div>
       </div>
     </mat-card-content>
   </mat-card>

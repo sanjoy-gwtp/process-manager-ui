@@ -1,26 +1,26 @@
 <!-- Forms List Header -->
 <div class="list-container">
-  <mat-card class="list-header-card forms">
+ <div class="header-content">
     <mat-card-header>
       <mat-card-title>
-        <mat-icon>dynamic_form</mat-icon>
-        Flowable Forms
+       Flowable Forms
       </mat-card-title>
-      <mat-card-subtitle>
-        Manage and deploy forms for your processes
-      </mat-card-subtitle>
     </mat-card-header>
-    <mat-card-actions>
-      <button mat-raised-button (click)="createNewForm()" class="list-header-primary-btn">
+
+    <div class="spacer"></div>
+    
+    <div class="action-buttons">
+       <button mat-raised-button (click)="createNewForm()" >
         <mat-icon>add</mat-icon>
         Create New Form
       </button>
-      <button mat-button (click)="refresh()" [disabled]="loading" class="list-header-secondary-btn">
+      <button mat-raised-button (click)="refresh()" [disabled]="loading" >
         <mat-icon>refresh</mat-icon>
         Refresh
       </button>
-    </mat-card-actions>
-  </mat-card>
+    </div>
+   </div>
+  
 
   <!-- Loading Spinner -->
   <div *ngIf="loading" class="list-loading-container">
@@ -64,12 +64,12 @@
             <td mat-cell *matCellDef="let form">
               <div class="form-name-container">
                 <div class="list-cell-primary">{{ form.name }}</div>
-                <div class="list-cell-meta">
+                <!-- <div class="list-cell-meta">
                   <mat-chip [color]="getStatusColor(form)" selected class="list-status-chip">
                     <mat-icon matChipPrefix>{{ getStatusIcon(form) }}</mat-icon>
                     {{ getStatusText(form) }}
                   </mat-chip>
-                </div>
+                </div> -->
               </div>
             </td>
           </ng-container>

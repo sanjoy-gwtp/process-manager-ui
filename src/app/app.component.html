@@ -1,28 +1,31 @@
 <mat-toolbar color="primary" class="main-toolbar">
-  <span class="app-title">Process Manager</span>
+  <button
+    type="button"
+    aria-label="Toggle sidenav"
+    mat-icon-button
+    (click)="toggleDrawer()">
+    <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+  </button>
+  <!-- <span class="toolbar-title">Process Manager</span> -->
+  <span class="app-title">Workflow Manager</span>
   <span class="spacer"></span>
-  <button mat-button routerLink="/processes" routerLinkActive="active-nav-link">
-    <mat-icon>list</mat-icon>
-    Process Definitions
-  </button>
-  <button mat-button routerLink="/instances" routerLinkActive="active-nav-link">
-    <mat-icon>play_circle</mat-icon>
-    Process Instances
-  </button>
-  <button mat-button routerLink="/tasks" routerLinkActive="active-nav-link">
-    <mat-icon>assignment</mat-icon>
-    Tasks
-  </button>
-  <button mat-button routerLink="/forms" routerLinkActive="active-nav-link">
-    <mat-icon>dynamic_form</mat-icon>
-    Forms
-  </button>
-  <button mat-button routerLink="/diagram" routerLinkActive="active-nav-link">
-    <mat-icon>account_tree</mat-icon>
-    BPMN Diagram
-  </button>
 </mat-toolbar>
 
-<main class="main-content">
-  <router-outlet></router-outlet>
-</main>
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav
+    #drawer
+    class="sidenav" [opened]="false">
+
+    <div class="sidenav-header">
+      <span class="app-title">Dashbord</span>
+    </div>
+
+    <app-navigation></app-navigation>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTableDataSource } from '@angular/material/table';
 import { ProcessInstance } from '../models/process-instance.model';
 import { ProcessDefinitionService } from '../services/process-definition.service';
 
@@ -12,6 +13,7 @@ import { ProcessDefinitionService } from '../services/process-definition.service
 })
 export class ProcessInstanceListComponent implements OnInit {
   processInstances: ProcessInstance[] = [];
+  dataSource = new MatTableDataSource<ProcessInstance>([]);
   loading = false;
   error: string | null = null;
 
@@ -43,6 +45,7 @@ export class ProcessInstanceListComponent implements OnInit {
     this.processDefinitionService.getProcessInstances().subscribe({
       next: (data) => {
         this.processInstances = data;
+        this.dataSource.data = data;
         this.loading = false;
       },
       error: (err) => {
@@ -121,6 +124,11 @@ export class ProcessInstanceListComponent implements OnInit {
         instanceId: instance.id
       } 
     });
+  }
+
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
   toggleInstanceSuspension(instance: ProcessInstance): void {

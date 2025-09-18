@@ -1,26 +1,50 @@
+
 .container {
-  padding: 20px;
+  padding: 16px;
   max-width: 1400px;
   margin: 0 auto;
+  gap: 24px;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Header Card */
+/* Header Card - Clean Material Design */
 .header-card {
-  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
-  color: white;
-  margin-bottom: 24px;
-}
-
-.header-card .mat-mdc-card-title,
-.header-card .mat-mdc-card-subtitle {
-  color: white;
+  background: var(--surface-color);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--divider-color);
 }
 
 .header-card .mat-mdc-card-title {
+  color: var(--text-primary) !important;
+  font-size: 1.75rem;
+  font-weight: 400;
+  margin-bottom: 8px;
+}
+
+.header-card .mat-mdc-card-subtitle {
+  color: var(--text-secondary) !important;
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+
+.header-avatar {
+  background-color: var(--primary-color) !important;
+  color: white !important;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 1.5rem;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Loading and Error States */
@@ -56,42 +80,47 @@
   justify-content: center;
 }
 
-/* Table Card */
-.table-card {
-  margin-top: 24px;
+/* Content Card */
+.content-card {
+  flex: 1;
 }
 
-.table-header {
+/* Table Toolbar */
+.table-toolbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
-  padding: 16px 0;
-  border-bottom: 1px solid #e0e0e0;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-.table-info {
+.search-field {
+  min-width: 300px;
+  flex: 1;
+}
+
+.toolbar-actions {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.instance-count {
-  font-weight: 500;
-  color: #757575;
-}
-
-.table-actions {
+.filter-chips {
   display: flex;
   gap: 8px;
 }
 
 .table-container {
+  margin: 16px 0;
   overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .full-width {
   width: 100%;
+  min-width: 800px;
 }
 
 /* Table Cell Styling */
@@ -107,17 +136,25 @@
 }
 
 .process-key {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.875rem;
   color: #757575;
-  font-size: 0.75rem;
+  background-color: #f5f5f5;
+  padding: 2px 4px;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+  display: inline-block;
 }
 
 .instance-id {
   font-family: 'Roboto Mono', monospace;
   font-size: 0.875rem;
   background-color: #f5f5f5;
-  padding: 4px 8px;
+  padding: 4px 6px;
   border-radius: 4px;
   border: 1px solid #e0e0e0;
+  display: inline-block;
+  margin-right: 8px;
 }
 
 .time-info {
@@ -185,59 +222,44 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {
-  .container {
-    padding: 16px;
-  }
-  
-  /* Hide less important columns on smaller screens */
-  .mat-column-businessKey,
-  .mat-column-activity {
-    display: none;
-  }
-}
-
 @media (max-width: 768px) {
   .container {
-    padding: 12px;
+    padding: 10px;
   }
-  
-  .table-header {
+
+  .full-width {
+    min-width: 600px;
+  }
+
+  .search-field {
+    min-width: 200px;
+  }
+
+  .table-toolbar {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    align-items: stretch;
   }
-  
-  /* Hide even more columns on mobile */
-  .mat-column-version {
-    display: none;
+
+  .toolbar-actions {
+    justify-content: center;
   }
-  
-  .process-info {
-    min-width: 120px;
-  }
-  
-  .instance-id {
-    font-size: 0.75rem;
-    padding: 2px 4px;
-  }
-  
-  .time-info {
-    min-width: 100px;
+
+  mat-cell, mat-header-cell {
+    padding: 8px 12px;
   }
 }
 
 @media (max-width: 480px) {
-  /* Show only essential columns on very small screens */
-  .mat-column-startTime {
-    display: none;
+  .filter-chips {
+    flex-wrap: wrap;
+    justify-content: center;
   }
-  
-  .header-card .mat-mdc-card-title {
-    font-size: 1.25rem;
+
+  .process-info {
+    min-width: 120px;
   }
-  
-  .table-header {
-    padding: 12px 0;
+
+  .instance-id {
+    font-size: 0.75rem;
   }
 }

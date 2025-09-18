@@ -33,26 +33,22 @@
     <mat-card class="header-card">
       <mat-card-header>
         <div class="header-content">
-          <button mat-icon-button (click)="goBack()" class="back-button">
-            <mat-icon>arrow_back</mat-icon>
-          </button>
           <div class="title-section">
             <mat-card-title>{{ processDefinition.name || processDefinition.key }}</mat-card-title>
-            <mat-card-subtitle *ngIf="processDefinition.description">
+            <!-- <mat-card-subtitle *ngIf="processDefinition.description">
               {{ processDefinition.description }}
-            </mat-card-subtitle>
+            </mat-card-subtitle> -->
           </div>
           <div class="spacer"></div>
           <div class="action-buttons">
             <button mat-raised-button 
-                    [color]="processDefinition.suspended ? 'primary' : 'warn'"
                     [disabled]="suspending || deleting"
                     (click)="suspendProcess()">
               <mat-icon *ngIf="!suspending">{{ processDefinition.suspended ? 'play_arrow' : 'pause' }}</mat-icon>
               <mat-icon *ngIf="suspending">refresh</mat-icon>
               {{ suspending ? 'Processing...' : (processDefinition.suspended ? 'Activate' : 'Suspend') }}
             </button>
-            <button mat-raised-button color="primary" 
+            <button mat-raised-button
                     *ngIf="processDefinition.hasStartFormKey && !processDefinition.suspended" 
                     [disabled]="deleting"
                     (click)="startProcess()">
@@ -82,7 +78,7 @@
     <mat-card class="info-card">
       <mat-card-header>
         <mat-card-title>
-          <mat-icon>info</mat-icon>
+          <!-- <mat-icon>info</mat-icon> -->
           Basic Information
         </mat-card-title>
       </mat-card-header>

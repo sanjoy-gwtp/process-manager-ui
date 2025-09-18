@@ -1,16 +1,27 @@
 <div class="container">
   <!-- Header -->
-  <mat-card class="header-card">
+  <div class="header-content">
     <mat-card-header>
       <mat-card-title>
-        <mat-icon>play_circle</mat-icon>
         Process Instances
       </mat-card-title>
-      <mat-card-subtitle>
-        View and manage running process instances
-      </mat-card-subtitle>
     </mat-card-header>
-  </mat-card>
+
+    <div class="spacer"></div>
+    
+    <div class="action-buttons">
+      <button mat-raised-button color="primary" (click)="loadProcessInstances()" [disabled]="loading">
+        <mat-icon *ngIf="loading" class="spinning">refresh</mat-icon>
+        <mat-icon *ngIf="!loading">refresh</mat-icon>
+        Refresh
+      </button>
+      <button mat-raised-button color="accent">
+        <mat-icon>filter_list</mat-icon>
+        Filters
+      </button>
+    </div>
+    
+  </div>
 
   <!-- Loading State -->
   <div *ngIf="loading" class="loading-container">
@@ -37,21 +48,28 @@
   </div>
 
   <!-- Process Instances Table -->
-  <mat-card *ngIf="!loading && !error" class="table-card">
+  <mat-card *ngIf="!loading && !error" class="content-card">
     <mat-card-content>
-      <div class="table-header">
-        <div class="table-info">
-          <span class="instance-count">{{ processInstances.length }} instance(s)</span>
-        </div>
-        <div class="table-actions">
-          <button mat-icon-button matTooltip="Refresh" (click)="loadProcessInstances()">
-            <mat-icon>refresh</mat-icon>
-          </button>
+      <!-- Search and Filters -->
+      <div class="table-toolbar">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search instances</mat-label>
+          <input matInput placeholder="Search by process name or ID..." (keyup)="applyFilter($event)">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <div class="toolbar-actions">
+          <mat-chip-listbox class="filter-chips">
+            <mat-chip-option selected>All ({{ processInstances.length }})</mat-chip-option>
+            <mat-chip-option>Running</mat-chip-option>
+            <mat-chip-option>Suspended</mat-chip-option>
+            <mat-chip-option>Completed</mat-chip-option>
+          </mat-chip-listbox>
         </div>
       </div>
 
       <div class="table-container">
-        <table mat-table [dataSource]="processInstances" class="full-width">
+        <table mat-table [dataSource]="dataSource" class="full-width">
           <!-- Process Definition Name Column -->
           <ng-container matColumnDef="processName">
             <th mat-header-cell *matHeaderCellDef>Process</th>

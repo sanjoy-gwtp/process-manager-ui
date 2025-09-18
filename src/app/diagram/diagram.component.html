@@ -1,72 +1,97 @@
 <div class="container">
-  <!-- Header -->
-  <div class="header-section">
-    <h2 class="process-title">
-      <span *ngIf="processName">{{ processName }}</span>
-      <span *ngIf="!processName">Process Diagram</span>
-    </h2>
-    <div class="process-info" *ngIf="processId">
-      <span class="info-label">Process ID:</span>
-      <code class="process-id">{{ processId }}</code>
+  <!-- Header Card -->
+  <!-- <mat-card class="header-card">
+    
+  </mat-card> -->
+   <div class="header-content">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="title-icon">account_tree</mat-icon>
+        <span *ngIf="processName">{{ processName }}</span>
+        <span *ngIf="!processName">Process Diagram</span>
+      </mat-card-title>
+      <mat-card-subtitle *ngIf="processId">
+        Process ID: <code class="process-id">{{ processId }}</code>
+      </mat-card-subtitle>
+      <mat-card-subtitle *ngIf="!processId">
+        No process loaded
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <div class="spacer"></div>
+    
+    <div class="action-buttons">
+      <button mat-raised-button (click)="resetDiagram()" [disabled]="deploying">
+          <mat-icon>refresh</mat-icon>
+          Reset
+        </button>
+        <button mat-raised-button color="primary" (click)="exportDiagram()" [disabled]="deploying">
+          <mat-icon>save</mat-icon>
+          Save XML
+        </button>
+        <button mat-raised-button color="accent" (click)="showTaskFormHelp()" [disabled]="deploying"
+                matTooltip="How to open task forms">
+          <mat-icon>assignment</mat-icon>
+          Task Forms
+        </button>
+        <button mat-raised-button color="warn" (click)="deployDiagram()" [disabled]="deploying">
+          <mat-spinner diameter="20" *ngIf="deploying"></mat-spinner>
+          <mat-icon *ngIf="!deploying">rocket_launch</mat-icon>
+          {{ deploying ? 'Deploying...' : 'Deploy to Server' }}
+        </button>
+        <button *ngIf="processId" mat-raised-button (click)="loadProcessDiagram(processId)" [disabled]="deploying">
+          <mat-icon>cloud_download</mat-icon>
+          Reload from Server
+        </button>
     </div>
-    <div class="process-info" *ngIf="!processId">
-      <span class="info-label">No process loaded</span>
-    </div>
-  </div>
+   </div>
+
+  
+
 
   <!-- Loading State -->
-  <div *ngIf="loading" class="loading-container">
-    <div class="spinner"></div>
-    <p>Loading process diagram...</p>
-  </div>
+  <mat-card *ngIf="loading" class="loading-card">
+    <mat-card-content class="loading-content">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading process diagram...</p>
+    </mat-card-content>
+  </mat-card>
 
   <!-- Error State -->
-  <div *ngIf="error && !loading" class="error-container">
-    <div class="error-message">
-      <span class="error-icon">⚠️</span>
-      {{ error }}
-    </div>
-    <button class="retry-button" type="button" (click)="loadProcessDiagram(processId!)">
-      Retry
-    </button>
-  </div>
+  <mat-card *ngIf="error && !loading" class="error-card">
+    <mat-card-content class="error-content">
+      <div class="error-message">
+        <mat-icon class="error-icon">warning</mat-icon>
+        {{ error }}
+      </div>
+      <button mat-raised-button color="primary" (click)="loadProcessDiagram(processId!)">
+        <mat-icon>refresh</mat-icon>
+        Retry
+      </button>
+    </mat-card-content>
+  </mat-card>
 
   <!-- Main BPMN Container -->
   <div class="main-container" [class.hidden]="loading">
-    <div #diagramRef class="diagram-container"></div>
-    <div class="properties-container" [class.collapsed]="propertiesCollapsed">
-      <div class="properties-header">
-        <span>Properties Panel</span>
-        <button class="toggle-button" (click)="toggleProperties()" [title]="propertiesCollapsed ? 'Expand Properties' : 'Collapse Properties'">
-          <span class="toggle-icon">{{ propertiesCollapsed ? '◀' : '▶' }}</span>
-        </button>
-      </div>
-      <div #propertiesRef class="properties-content" [class.hidden]="propertiesCollapsed"></div>
-    </div>
-  </div>
+    <mat-card class="diagram-card">
+      <div #diagramRef class="diagram-container"></div>
+    </mat-card>
 
-  <!-- Action Buttons -->
-  <div class="button-container" [class.hidden]="loading">
-    <button class="button secondary" type="button" (click)="resetDiagram()" [disabled]="deploying">
-      <span class="button-icon">🔄</span>
-      Reset
-    </button>
-    <button class="button primary" type="button" (click)="exportDiagram()" [disabled]="deploying">
-      <span class="button-icon">💾</span>
-      Save XML
-    </button>
-    <button class="button task-form" type="button" (click)="showTaskFormHelp()" [disabled]="deploying" title="How to open task forms">
-      <span class="button-icon">📋</span>
-      Task Forms
-    </button>
-    <button class="button deploy" type="button" (click)="deployDiagram()" [disabled]="deploying">
-      <span class="button-icon" *ngIf="!deploying">🚀</span>
-      <span class="deploying-spinner" *ngIf="deploying"></span>
-      {{ deploying ? 'Deploying...' : 'Deploy to Server' }}
-    </button>
-    <button *ngIf="processId" class="button secondary" type="button" (click)="loadProcessDiagram(processId)" [disabled]="deploying">
-      <span class="button-icon">🔄</span>
-      Reload from Server
-    </button>
+    <mat-card class="properties-card" [class.collapsed]="propertiesCollapsed">
+      <!-- <mat-card-header class="properties-header">
+        <mat-card-title>
+          Properties Panel
+        </mat-card-title>
+        <button mat-icon-button
+                (click)="toggleProperties()"
+                [title]="propertiesCollapsed ? 'Expand Properties' : 'Collapse Properties'"
+                class="toggle-button">
+          <mat-icon>{{ propertiesCollapsed ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+        </button>
+      </mat-card-header> -->
+      <mat-card-content class="properties-content" [class.hidden]="propertiesCollapsed">
+        <div #propertiesRef></div>
+      </mat-card-content>
+    </mat-card>
   </div>
 </div>
